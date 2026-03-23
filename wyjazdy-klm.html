@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="Wyjazdy KLM"/>
+<title>Wyjazdy KLM</title>
+<style>
+html{background:#13100c}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#13100c;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#ede0c8;min-height:100vh;font-size:15px}
+#app{background:#13100c;min-height:100vh}
+h1,h2,h3{font-family:Georgia,serif}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:16px}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:#13100c}
+::-webkit-scrollbar-thumb{background:#4a3a28;border-radius:3px}
+input[type=date]::-webkit-calendar-picker-indicator,
+input[type=time]::-webkit-calendar-picker-indicator{filter:invert(0.5)}
+select option{background:#1e1810;color:#ede0c8}
+
+.wrap{max-width:840px;margin:0 auto;padding:28px 16px 80px}
+
+/* Cards */
+.card{background:#1c1710;border:1.5px solid #3a2e1e;border-radius:16px;padding:20px;cursor:pointer;position:relative;overflow:hidden;transition:border-color .2s,transform .15s,box-shadow .2s}
+.card:hover{border-color:#c9a96e;transform:translateY(-2px);box-shadow:0 8px 32px rgba(201,169,110,.12)}
+
+/* Inputs */
+.ifield{width:100%;background:#0e0c09;border:1.5px solid #3a2e1e;border-radius:10px;padding:11px 14px;color:#ede0c8;font-size:16px;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.ifield:focus{border-color:#c9a96e;background:#111009}
+.lbl{display:block;color:#a08060;font-size:11px;font-weight:700;letter-spacing:1.2px;margin-bottom:6px;text-transform:uppercase}
+
+/* Buttons */
+.btn{border-radius:10px;padding:11px 20px;font-size:14px;font-weight:700;border:none;cursor:pointer;transition:opacity .15s,transform .1s;letter-spacing:.3px}
+.btn:active{opacity:.75;transform:scale(.97)}
+.btn-p{background:linear-gradient(135deg,#d4a84a,#c9a96e);color:#0a0806;box-shadow:0 4px 16px rgba(201,169,110,.35)}
+.btn-g{background:rgba(201,169,110,.12);color:#d4a84a;border:1.5px solid rgba(201,169,110,.5)}
+.btn-s{background:#1e1a12;color:#a08060;border:1.5px solid #3a2e1e}
+.btn-danger{background:rgba(220,80,80,.15);color:#e07070;border:1.5px solid rgba(220,80,80,.4)}
+
+/* Badges */
+.badge{display:inline-block;border-radius:5px;padding:3px 9px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;white-space:nowrap}
+
+/* Progress bar */
+.pbar-wrap{background:#2a2015;border-radius:4px;overflow:hidden}
+.pbar{height:100%;border-radius:4px;transition:width .4s}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(5,4,2,.92);display:flex;align-items:center;justify-content:center;z-index:200;padding:16px}
+.modal{background:#1c1710;border:1.5px solid #3a2e1e;border-radius:20px;padding:28px 22px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:0 40px 100px rgba(0,0,0,.9)}
+.modal-wide{max-width:660px}
+.modal-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.modal-title{color:#ede0c8;font-size:18px;font-family:Georgia,serif;font-weight:700}
+.modal-close{background:rgba(255,255,255,.06);border:1.5px solid #3a2e1e;color:#a08060;font-size:18px;cursor:pointer;padding:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+
+/* Tabs */
+.tabs{display:flex;border-bottom:1.5px solid #2a2015;overflow-x:auto;margin-bottom:24px;-webkit-overflow-scrolling:touch;gap:2px}
+.tab{background:none;border:none;cursor:pointer;font-size:13px;font-weight:600;padding:10px 14px 12px;color:#6a5535;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;white-space:nowrap;transition:color .2s}
+.tab.active{color:#ede0c8;border-bottom-color:#c9a96e}
+.tab:hover:not(.active){color:#a08060}
+
+/* Grids */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+
+/* Stat cards */
+.stat-card{background:#171310;border:1.5px solid #3a2e1e;border-radius:12px;padding:14px 16px}
+.stat-label{color:#6a5535;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;font-weight:700}
+.stat-val{font-family:Georgia,serif;font-weight:700;font-size:20px}
+.stat-unit{color:#4a3a22;font-size:12px;margin-top:2px}
+
+/* Row items */
+.row-item{background:#171310;border:1.5px solid #2e2418;border-radius:12px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start;margin-bottom:8px;transition:border-color .2s}
+.row-item:hover{border-color:#3a2e1e}
+.ghost-btn{background:none;border:none;cursor:pointer;padding:4px;line-height:1;border-radius:6px;transition:background .15s}
+.ghost-btn:hover{background:rgba(255,255,255,.06)}
+
+/* Filter & sub-tab buttons */
+.filter-btn{border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;background:#171310;border:1.5px solid #2e2418;color:#6a5535;transition:all .2s}
+.filter-btn.active{background:rgba(201,169,110,.15);border-color:rgba(201,169,110,.6);color:#d4a84a}
+.sub-tab{border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;background:#171310;border:1.5px solid #2e2418;color:#6a5535;transition:all .2s}
+.sub-tab.active{background:rgba(201,169,110,.15);border-color:rgba(201,169,110,.6);color:#d4a84a}
+
+/* Circle buttons */
+.circ-btn{width:32px;height:32px;border-radius:50%;background:#1e1a12;border:1.5px solid #3a2e1e;color:#c9a96e;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .2s}
+.circ-btn:hover{background:#2a2418}
+.vis-btn{width:28px;height:28px;border-radius:50%;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;margin-top:1px;border:2px solid #3a3020;background:#171310;transition:all .2s}
+
+/* Empty state */
+.empty{text-align:center;padding:48px 0;color:#4a3a22}
+.empty .emoji{font-size:44px;margin-bottom:14px}
+.empty h3{color:#6a5535;font-family:Georgia,serif;font-size:20px;margin-bottom:8px}
+.empty p{font-size:14px;margin-bottom:24px;line-height:1.5}
+
+/* Section headers */
+.section-hdr{display:flex;align-items:center;gap:8px;margin-bottom:10px;border-bottom:1px solid #2a2015;padding-bottom:8px}
+
+/* Day number circle */
+.day-num{width:28px;height:28px;border-radius:50%;background:rgba(201,169,110,.12);border:1.5px solid rgba(201,169,110,.4);display:flex;align-items:center;justify-content:center;color:#c9a96e;font-size:12px;font-weight:700;flex-shrink:0}
+
+/* Form section */
+.form-box{background:#111009;border:1.5px solid #2e2418;border-radius:14px;padding:18px}
+.form-box.editing{border-color:rgba(201,169,110,.5)}
+
+/* App header */
+.app-hdr{margin-bottom:32px;border-bottom:1.5px solid #2a2015;padding-bottom:24px}
+.app-title{font-size:32px;color:#ede0c8;letter-spacing:-1px;margin-bottom:3px}
+.app-sub{color:#4a3a22;font-size:11px;letter-spacing:2.5px;text-transform:uppercase}
+
+/* Trip card specifics */
+.trip-name{font-size:19px;color:#ede0c8;font-family:Georgia,serif;font-weight:700;margin-bottom:3px}
+.trip-dest{font-size:13px;color:#6a5535;margin-bottom:13px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+const SK="wyjazdy-klm-v1";
+const CATS=[{id:"transport",l:"Transport",i:"✈️",c:"#7a9ab0"},{id:"nocleg",l:"Nocleg",i:"🏨",c:"#9a7ab0"},{id:"jedzenie",l:"Jedzenie",i:"🍽️",c:"#c9a96e"},{id:"atrakcje",l:"Atrakcje",i:"🏛️",c:"#7ab07a"},{id:"zakupy",l:"Zakupy",i:"🛒",c:"#b07a7a"},{id:"inne",l:"Inne",i:"📋",c:"#8a8a7a"}];
+const ECATS=[{id:"flight",l:"Lot",i:"✈️",c:"#7a9ab0"},{id:"hotel",l:"Hotel/nocleg",i:"🏨",c:"#9a7ab0"},{id:"car",l:"Wynajem auta",i:"🚗",c:"#b09a6e"},{id:"transfer",l:"Transfer/pociąg",i:"🚆",c:"#7ab07a"},{id:"insurance",l:"Ubezpieczenie",i:"🛡️",c:"#7a9ab0"},{id:"visa",l:"Wiza/opłaty",i:"📄",c:"#9a7a7a"},{id:"food_est",l:"Jedzenie (est.)",i:"🍽️",c:"#c9a96e"},{id:"activities",l:"Atrakcje (est.)",i:"🎯",c:"#7ab07a"},{id:"shopping_est",l:"Zakupy (est.)",i:"🛒",c:"#b07a7a"},{id:"other_est",l:"Inne",i:"📋",c:"#8a8a7a"}];
+const PTYPES=[{id:"sight",l:"Miejsce/widok",i:"📍",c:"#c9a96e"},{id:"nature",l:"Natura/szlak",i:"🌿",c:"#7ab07a"},{id:"food",l:"Restauracja",i:"🍽️",c:"#d4a04a"},{id:"bar",l:"Bar/kawiarnia",i:"🍺",c:"#b07a7a"},{id:"museum",l:"Muzeum/kultura",i:"🏛️",c:"#9a7ab0"},{id:"other",l:"Inne",i:"📌",c:"#8a8a7a"}];
+const CATM=Object.fromEntries(CATS.map(c=>[c.id,c]));
+const ECATM=Object.fromEntries(ECATS.map(c=>[c.id,c]));
+const PTYPEM=Object.fromEntries(PTYPES.map(c=>[c.id,c]));
+const gCat=id=>CATM[id]||CATS[5];
+const gECat=id=>ECATM[id]||ECATS[9];
+const gPType=id=>PTYPEM[id]||PTYPES[5];
+
+let state={trips:[],selId:null,modal:null,tab:"estimate",bSub:"overview",plFilter:"all",editingId:null};
+
+function loadData(){try{const s=localStorage.getItem(SK);if(s)state.trips=JSON.parse(s);}catch(e){}}
+function saveData(){try{localStorage.setItem(SK,JSON.stringify(state.trips));}catch(e){}}
+function fmtDate(d){if(!d)return"";return new Date(d+"T12:00:00").toLocaleDateString("pl-PL",{day:"numeric",month:"long",year:"numeric"});}
+function fmtShort(d){if(!d)return"";return new Date(d+"T12:00:00").toLocaleDateString("pl-PL",{weekday:"short",day:"numeric",month:"short"});}
+function getDays(s,e){if(!s||!e)return[];const days=[];const a=new Date(s+"T12:00:00"),b=new Date(e+"T12:00:00");for(let d=new Date(a);d<=b;d.setDate(d.getDate()+1))days.push(d.toISOString().split("T")[0]);return days;}
+function uid(){return Date.now()+Math.random();}
+function pct(v,t){return t>0?Math.min(100,(v/t)*100):0;}
+function pbarColor(p){return p>100?"#e07070":p>85?"#d4a04a":"#c9a96e";}
+
+function el(tag,attrs,children){
+  const e=document.createElement(tag);
+  if(attrs)Object.entries(attrs).forEach(([k,v])=>{
+    if(k==="style"&&typeof v==="object")Object.assign(e.style,v);
+    else if(k.startsWith("on"))e.addEventListener(k.slice(2).toLowerCase(),v);
+    else if(k==="class")e.className=v;
+    else if(k==="checked")e.checked=v;
+    else if(k==="value")e.value=v||"";
+    else if(k==="disabled")e.disabled=v;
+    else e.setAttribute(k,v);
+  });
+  if(children){[children].flat().forEach(c=>{
+    if(c==null||c===false)return;
+    e.appendChild(typeof c==="string"||typeof c==="number"?document.createTextNode(c):c);
+  });}
+  return e;
+}
+function h(tag,attrs,...children){return el(tag,attrs,children.flat());}
+function txt(s){return document.createTextNode(String(s??""));}
+
+function pBar(p,color,height=5){
+  const c=p>100?"#e07070":p>85?"#d4a04a":color||"#c9a96e";
+  return h("div",{class:"pbar-wrap",style:{height:height+"px"}},
+    h("div",{class:"pbar",style:{width:Math.min(p,100)+"%",background:c,height:"100%"}})
+  );
+}
+function badge(text,color="#c9a96e"){
+  return h("span",{class:"badge",style:{background:color+"22",color,border:`1px solid ${color}44`}},text);
+}
+function statCard(label,val,color,unit="zł"){
+  return h("div",{class:"stat-card"},
+    h("div",{class:"stat-label"},label),
+    h("div",{class:"stat-val",style:{color}},typeof val==="number"?val.toFixed(2):val),
+    h("div",{class:"stat-unit"},unit)
+  );
+}
+function fld(label,inp){
+  const w=h("div",{style:{marginBottom:"13px"}});
+  if(label)w.appendChild(h("label",{class:"lbl"},label));
+  w.appendChild(inp);
+  return w;
+}
+function inp(attrs){const i=h("input",{class:"ifield",...attrs});i.addEventListener("focus",()=>i.style.borderColor="#c9a96e");i.addEventListener("blur",()=>i.style.borderColor="#3a3020");return i;}
+function sel(attrs,opts){const s=h("select",{class:"ifield",...attrs},opts.map(o=>h("option",{value:o.v||o.id||o},o.l||o.label||o)));s.addEventListener("focus",()=>s.style.borderColor="#c9a96e");s.addEventListener("blur",()=>s.style.borderColor="#3a3020");if(attrs.value)s.value=attrs.value;return s;}
+function ta(attrs){const t=h("textarea",{class:"ifield",...attrs});t.style.resize="vertical";t.style.minHeight="72px";t.addEventListener("focus",()=>t.style.borderColor="#c9a96e");t.addEventListener("blur",()=>t.style.borderColor="#3a3020");return t;}
+function btn(text,cls,cb,extra){const b=h("button",{class:"btn "+cls,...(extra||{})},text);b.addEventListener("click",cb);return b;}
+
+// ── Modal system ──
+function openModal(content,wide){
+  const bg=h("div",{class:"modal-bg"});
+  bg.addEventListener("click",e=>{if(e.target===bg)bg.remove();});
+  const box=h("div",{class:"modal"+(wide?" modal-wide":"")},content);
+  bg.appendChild(box);
+  document.body.appendChild(bg);
+  return bg;
+}
+function closeModal(bg){if(bg&&bg.parentNode)bg.parentNode.removeChild(bg);}
+function modalHdr(title,bg){
+  return h("div",{class:"modal-hdr"},
+    h("h3",{class:"modal-title"},title),
+    h("button",{class:"modal-close",onclick:()=>closeModal(bg)},"✕")
+  );
+}
+
+// ── CSV Export ──
+function csvE(v){if(v==null)return"";const s=String(v);if(/[,"\n]/.test(s))return`"${s.replace(/"/g,'""')}"`;return s;}
+function buildCSV(hdr,rows){return[hdr,...rows].map(r=>r.map(csvE).join(",")).join("\n");}
+function dlCSV(name,content){
+  const blob=new Blob(["\uFEFF"+content],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob);const a=document.createElement("a");
+  a.href=url;a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+function exportTrip(trip){
+  const p=parseInt(trip.persons)||1;const slug=(trip.name||"wyjazd").replace(/\s+/g,"_");
+  const est=trip.estimates||[];
+  const etot=est.reduce((s,e)=>s+(parseFloat(e.cost)||0),0);
+  const erows=est.map(e=>[gECat(e.category).l,e.label,parseFloat(e.cost)||0,((parseFloat(e.cost)||0)/p).toFixed(2),e.booked?"Tak":"Nie",e.notes||""]);
+  erows.push(["","RAZEM",etot.toFixed(2),(etot/p).toFixed(2),"",""]);
+  dlCSV(slug+"_kosztorys.csv",buildCSV(["Kategoria","Nazwa","Koszt (zł)","Koszt/os.","Zarezerwowane","Notatki"],erows));
+  setTimeout(()=>{
+    const days=getDays(trip.startDate,trip.endDate);
+    const evs=(trip.events||[]).sort((a,b)=>a.date>b.date?1:a.date<b.date?-1:0);
+    const wrows=evs.map(e=>{const dn=days.indexOf(e.date)+1;const cost=parseFloat(e.cost)||0;return[e.date,dn>0?"Dzień "+dn:"",e.time||"",gCat(e.category).l,e.title,cost.toFixed(2),(cost/p).toFixed(2),e.notes||""];});
+    const wtot=(trip.events||[]).reduce((s,e)=>s+(parseFloat(e.cost)||0),0);
+    wrows.push(["","","","","RAZEM",wtot.toFixed(2),(wtot/p).toFixed(2),""]);
+    dlCSV(slug+"_wydatki.csv",buildCSV(["Data","Dzień","Czas","Kategoria","Opis","Koszt (zł)","Koszt/os.","Notatki"],wrows));
+  },400);
+  setTimeout(()=>{
+    const prows=(trip.places||[]).map(p=>[gPType(p.type).l,p.name,p.address||"",p.rating?"⭐".repeat(parseInt(p.rating)):"",p.visited?"Tak":"Nie",p.notes||""]);
+    dlCSV(slug+"_miejsca.csv",buildCSV(["Typ","Nazwa","Adres","Ocena","Odwiedzone","Notatki"],prows));
+  },800);
+}
+
+// ── Find trip ──
+function getTrip(){return state.trips.find(t=>t.id===state.selId);}
+function updateTrip(updated){state.trips=state.trips.map(t=>t.id===updated.id?updated:t);saveData();render();}
+
+// ── Modals ──
+function showNewTrip(){
+  const bg=openModal([]);
+  const box=bg.querySelector(".modal");
+  box.innerHTML="";
+  const nName=inp({placeholder:"np. Estonia Finlandia (opcjonalnie)"});
+  const nDest=inp({placeholder:"np. Tallinn (opcjonalnie)"});
+  const nSD=inp({type:"date"});
+  const nED=inp({type:"date"});
+  const nBudget=inp({type:"number",placeholder:"np. 5000"});
+  const nDailyCash=inp({type:"number",placeholder:"np. 2000"});
+  const nPersons=inp({type:"number",min:"1",value:"1"});
+  const nNotes=ta({placeholder:"Pomysły, linki..."});
+  box.appendChild(modalHdr("Nowy wyjazd",bg));
+  box.appendChild(fld("Nazwa wyjazdu",nName));
+  box.appendChild(fld("Cel podróży",nDest));
+  const dg=h("div",{class:"grid2"});dg.appendChild(fld("Data wyjazdu",nSD));dg.appendChild(fld("Data powrotu",nED));box.appendChild(dg);
+  box.appendChild(fld("Liczba osób",nPersons));
+  const budgetBox=h("div",{style:{background:"#111009",borderRadius:"10px",border:"1px solid #2a2015",padding:"12px 14px",marginBottom:"13px"}});
+  budgetBox.appendChild(h("div",{style:{color:"#a08060",fontSize:"11px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"10px"}},"Budżety (opcjonalnie)"));
+  budgetBox.appendChild(fld("💰 Kosztorys — lot, hotel, ubezpieczenie...",nBudget));
+  budgetBox.appendChild(fld("🎒 Kasa dzienna — jedzenie, atrakcje, transport...",nDailyCash));
+  box.appendChild(budgetBox);
+  box.appendChild(fld("Notatki",nNotes));
+  const btns=h("div",{style:{display:"flex",gap:"10px",justifyContent:"flex-end",marginTop:"6px"}});
+  btns.appendChild(btn("Anuluj","btn btn-g",()=>closeModal(bg)));
+  btns.appendChild(btn("Utwórz","btn btn-p",()=>{
+    const t={id:uid(),name:nName.value||"Nowy wyjazd",destination:nDest.value,startDate:nSD.value,endDate:nED.value,budget:nBudget.value,dailyCash:nDailyCash.value,persons:parseInt(nPersons.value)||1,notes:nNotes.value,events:[],packing:[],dayBudgets:{},estimates:[],places:[]};
+    state.trips.push(t);saveData();state.selId=t.id;state.tab="estimate";closeModal(bg);render();
+  }));
+  box.appendChild(btns);
+}
+
+function showAddEvent(date,trip){
+  const bg=openModal([]);const box=bg.querySelector(".modal");box.innerHTML="";
+  const nTitle=inp({placeholder:"np. Kolacja przy zamku"});
+  const nCat=sel({value:"jedzenie"},CATS.map(c=>({v:c.id,l:c.i+" "+c.l})));
+  const nTime=inp({type:"time"});
+  const nCost=inp({type:"number",placeholder:"0"});
+  const nNotes=ta({placeholder:"Adres, notatka..."});
+  box.appendChild(modalHdr("Dodaj wydatek — "+fmtShort(date),bg));
+  box.appendChild(fld("Opis",nTitle));
+  box.appendChild(fld("Kategoria",nCat));
+  const dg=h("div",{class:"grid2"});dg.appendChild(fld("Godzina",nTime));dg.appendChild(fld("Koszt (zł)",nCost));box.appendChild(dg);
+  box.appendChild(fld("Notatki",nNotes));
+  const btns=h("div",{style:{display:"flex",gap:"10px",justifyContent:"flex-end",marginTop:"6px"}});
+  btns.appendChild(btn("Anuluj","btn btn-g",()=>closeModal(bg)));
+  btns.appendChild(btn("Dodaj","btn btn-p",()=>{
+    if(!nTitle.value.trim())return alert("Podaj opis.");
+    const ev={id:uid(),date,title:nTitle.value,category:nCat.value,time:nTime.value,cost:nCost.value,notes:nNotes.value};
+    updateTrip({...trip,events:[...(trip.events||[]),ev]});
+    closeModal(bg);
+  }));
+  box.appendChild(btns);
+}
+
+function showBudgetPlanner(trip){
+  const db={...(trip.dayBudgets||{})};
+  const days=getDays(trip.startDate,trip.endDate);
+  const totBudget=parseFloat(trip.budget)||0;
+  const bg=openModal([],true);const box=bg.querySelector(".modal");box.innerHTML="";
+  box.appendChild(modalHdr("Planowanie budżetu dziennego",bg));
+
+  const summary=h("div",{class:"grid3",style:{marginBottom:"14px"}});
+  box.appendChild(summary);
+  const progWrap=h("div",{style:{marginBottom:"14px"}});box.appendChild(progWrap);
+
+  const tools=h("div",{style:{display:"flex",gap:"8px",marginBottom:"14px",flexWrap:"wrap",alignItems:"center"}});
+  const qInp=inp({type:"number",placeholder:"Stała kwota (zł)",style:{width:"150px",padding:"6px 10px",fontSize:"13px"}});
+  tools.appendChild(btn("⚖️ Podziel równo","btn btn-s",()=>{
+    if(!days.length||!totBudget)return;
+    const pD=(totBudget/days.length).toFixed(2);
+    days.forEach(d=>{db[d]=pD;});
+    refreshDays();
+  }));
+  tools.appendChild(qInp);
+  tools.appendChild(btn("Zastosuj","btn btn-s",()=>{if(!qInp.value)return;days.forEach(d=>{db[d]=qInp.value;});refreshDays();}));
+  box.appendChild(tools);
+
+  const dayList=h("div",{style:{maxHeight:"320px",overflowY:"auto",display:"flex",flexDirection:"column",gap:"7px"}});
+  box.appendChild(dayList);
+
+  const saveRow=h("div",{style:{display:"flex",gap:"10px",justifyContent:"flex-end",marginTop:"16px"}});
+  saveRow.appendChild(btn("Anuluj","btn btn-g",()=>closeModal(bg)));
+  saveRow.appendChild(btn("Zapisz plan","btn btn-p",()=>{updateTrip({...trip,dayBudgets:{...db}});closeModal(bg);}));
+  box.appendChild(saveRow);
+
+  function refreshSummary(){
+    const totAlloc=days.reduce((s,d)=>s+(parseFloat(db[d])||0),0);
+    const rem=totBudget-totAlloc;
+    summary.innerHTML="";
+    summary.appendChild(statCard("Budżet",totBudget,"#c9a96e"));
+    summary.appendChild(statCard("Przydzielono",totAlloc,totAlloc>totBudget?"#e07070":"#7ab07a"));
+    summary.appendChild(statCard("Wolne",rem,rem<0?"#e07070":"#c9a96e"));
+    progWrap.innerHTML="";
+    if(totBudget>0)progWrap.appendChild(pBar(pct(totAlloc,totBudget),null,5));
+  }
+
+  function refreshDays(){
+    dayList.innerHTML="";
+    refreshSummary();
+    days.forEach((d,i)=>{
+      const spent=(trip.events||[]).filter(e=>e.date===d).reduce((s,e)=>s+(parseFloat(e.cost)||0),0);
+      const plan=parseFloat(db[d])||0;const over=plan>0&&spent>plan;
+      const row=h("div",{style:{background:"#0d0b08",border:`1px solid ${over?"#e0707033":"#2a2015"}`,borderRadius:"10px",padding:"10px 13px"}});
+      const top=h("div",{style:{display:"flex",alignItems:"center",gap:"10px"}});
+      top.appendChild(h("div",{style:{width:"24px",height:"24px",borderRadius:"50%",background:"#c9a96e15",border:"1px solid #c9a96e44",display:"flex",alignItems:"center",justifyContent:"center",color:"#c9a96e",fontSize:"11px",fontWeight:"700",flexShrink:"0",textAlign:"center",lineHeight:"24px"}},String(i+1)));
+      top.appendChild(h("div",{style:{flex:"1",color:"#c0b090",fontSize:"13px",fontWeight:"600"}},new Date(d+"T12:00:00").toLocaleDateString("pl-PL",{weekday:"long",day:"numeric",month:"long"})));
+      const dInp=inp({type:"number",placeholder:"0",value:db[d]||"",style:{width:"90px",padding:"6px 10px",fontSize:"14px",textAlign:"right"}});
+      dInp.addEventListener("input",()=>{db[d]=dInp.value;refreshSummary();});
+      top.appendChild(dInp);
+      top.appendChild(h("span",{style:{color:"#4a3a22",fontSize:"12px"}},"zł"));
+      row.appendChild(top);
+      if(plan>0||spent>0){
+        const pb=h("div",{style:{marginTop:"7px"}});pb.appendChild(pBar(pct(spent,plan),null,3));
+        const info=h("div",{style:{display:"flex",justifyContent:"space-between",marginTop:"3px",fontSize:"11px",color:"#4a3a22"}});
+        info.appendChild(h("span",{},"Wydano: ",h("span",{style:{color:over?"#e07070":"#7a6a4a"}},spent.toFixed(2))));
+        if(plan>0)info.appendChild(h("span",{style:{color:over?"#e07070":"#7ab07a"}},"Saldo: "+((plan-spent)>=0?"+":"")+((plan-spent).toFixed(2))));
+        pb.appendChild(info);row.appendChild(pb);
+      }
+      dayList.appendChild(row);
+    });
+  }
+  refreshDays();
+}
+
+// ── Estimate Tab ──
+function renderEstimate(trip,container){
+  container.innerHTML="";
+  const persons=parseInt(trip.persons)||1;
+  const estimates=trip.estimates||[];
+  const totEst=estimates.reduce((s,e)=>s+(parseFloat(e.cost)||0),0);
+  const totBook=estimates.filter(e=>e.booked).reduce((s,e)=>s+(parseFloat(e.cost)||0),0);
+  const totBudget=parseFloat(trip.budget)||0;
+
+  // Persons
+  const prow=h("div",{style:{display:"flex",alignItems:"center",gap:"10px",marginBottom:"18px"}});
+  prow.appendChild(h("span",{style:{color:"#5a4a30",fontSize:"13px"}},"Liczba osób:"));
+  const mBtn=h("button",{class:"circ-btn"},"−");mBtn.addEventListener("click",()=>{updateTrip({...trip,persons:Math.max(1,persons-1)});});
+  prow.appendChild(mBtn);
+  prow.appendChild(h("span",{style:{color:"#f0e6d0",fontWeight:"700",fontSize:"18px",fontFamily:"Georgia,serif",minWidth:"20px",textAlign:"center"}},String(persons)));
+  const pBtn=h("button",{class:"circ-btn"},"+");pBtn.addEventListener("click",()=>{updateTrip({...trip,persons:persons+1});});
+  prow.appendChild(pBtn);
+  if(persons>1){const ps=h("span",{style:{color:"#5a4a30",fontSize:"12px"}},"· na osobę: ");ps.appendChild(h("span",{style:{color:"#c9a96e",fontWeight:"700"}},(totEst/persons).toFixed(2)+" zł"));prow.appendChild(ps);}
+  container.appendChild(prow);
+
+  // Cards
+  const cards=h("div",{class:"grid3",style:{marginBottom:"20px"}});
+  cards.appendChild(statCard("Łączny koszt",totEst,"#c9a96e"));
+  if(persons>1)cards.appendChild(statCard("Na osobę (÷"+persons+")",totEst/persons,"#d4a04a"));
+  cards.appendChild(statCard("Zarezerwowano",totBook,"#7ab07a"));
+  cards.appendChild(statCard("Do rezerwacji",totEst-totBook,totEst-totBook>0?"#d4a04a":"#7ab07a"));
+  if(totBudget>0)cards.appendChild(statCard("Budżet − koszt",totBudget-totEst,totBudget-totEst<0?"#e07070":"#7ab07a"));
+  container.appendChild(cards);
+  if(totBudget>0){container.appendChild(pBar(pct(totEst,totBudget),null,5));container.appendChild(h("div",{style:{height:"16px"}}));}
+
+  // Form
+  let editingId=null;
+  const formWrap=h("div",{style:{background:"#0d0b08",borderRadius:"12px",padding:"16px 18px",marginBottom:"20px"}});
+  const formTitle=h("div",{style:{color:"#7a6a4a",fontSize:"11px",textTransform:"uppercase",letterSpacing:"1.2px",marginBottom:"12px",fontWeight:"700"}},"➕ Dodaj pozycję");
+  const fLabel=inp({placeholder:"np. Lot Warszawa–Barcelona"});
+  const fCat=sel({value:"flight"},ECATS.map(c=>({v:c.id,l:c.i+" "+c.l})));
+  const fCost=inp({type:"number",placeholder:"np. 1200"});
+  const fNotes=inp({placeholder:"link, potwierdzenie..."});
+  const fBooked=h("input",{type:"checkbox",style:{accentColor:"#7ab07a",width:"15px",height:"15px",cursor:"pointer"}});
+  const fBookedLbl=h("label",{style:{display:"flex",alignItems:"center",gap:"7px",cursor:"pointer",color:"#9a8a6a",fontSize:"13px"}},fBooked,"Zarezerwowane");
+  const saveBtn=btn("Dodaj","btn btn-p",()=>{
+    if(!fLabel.value.trim()||!fCost.value)return alert("Podaj nazwę i koszt.");
+    const item={id:editingId||uid(),label:fLabel.value,category:fCat.value,cost:fCost.value,notes:fNotes.value,booked:fBooked.checked};
+    let newEst;
+    if(editingId){newEst=estimates.map(e=>e.id===editingId?item:e);editingId=null;saveBtn.textContent="Dodaj";formTitle.textContent="➕ Dodaj pozycję";formWrap.style.borderColor="transparent";}
+    else newEst=[...estimates,item];
+    updateTrip({...trip,estimates:newEst});
+  });
+  const cancelBtn=btn("Anuluj","btn btn-s",()=>{editingId=null;fLabel.value="";fCat.value="flight";fCost.value="";fNotes.value="";fBooked.checked=false;saveBtn.textContent="Dodaj";formTitle.textContent="➕ Dodaj pozycję";formWrap.style.border="none";});
+  cancelBtn.style.display="none";
+  const g=h("div",{style:{display:"grid",gridTemplateColumns:"2fr 1fr",gap:"12px"}});
+  const g1=h("div",{style:{gridColumn:"1/-1"}});g1.appendChild(h("label",{class:"lbl"},"Nazwa"));g1.appendChild(fLabel);g.appendChild(g1);
+  const g2=h("div",{});g2.appendChild(h("label",{class:"lbl"},"Kategoria"));g2.appendChild(fCat);g.appendChild(g2);
+  const g3=h("div",{});g3.appendChild(h("label",{class:"lbl"},"Koszt łączny (zł)"));g3.appendChild(fCost);g.appendChild(g3);
+  const g4=h("div",{style:{gridColumn:"1/-1"}});g4.appendChild(h("label",{class:"lbl"},"Notatki"));g4.appendChild(fNotes);g.appendChild(g4);
+  const btnsRow=h("div",{style:{display:"flex",alignItems:"center",gap:"12px",marginTop:"12px"}});
+  btnsRow.appendChild(fBookedLbl);btnsRow.appendChild(h("div",{style:{flex:"1"}}));btnsRow.appendChild(cancelBtn);btnsRow.appendChild(saveBtn);
+  formWrap.appendChild(formTitle);formWrap.appendChild(g);formWrap.appendChild(btnsRow);
+  container.appendChild(formWrap);
+
+  // Items
+  if(!estimates.length){container.appendChild(h("div",{class:"empty"},h("div",{class:"emoji"},"💰"),h("p",{style:{fontSize:"14px"}},"Dodaj loty, hotele, przejazdy...")));return;}
+
+  ECATS.forEach(cat=>{
+    const items=estimates.filter(e=>e.category===cat.id);
+    if(!items.length)return;
+    const catTotal=items.reduce((s,e)=>s+(parseFloat(e.cost)||0),0);
+    const catHdr=h("div",{style:{display:"flex",alignItems:"center",gap:"8px",marginBottom:"8px",borderBottom:"1px solid #2a2015",paddingBottom:"6px"}});
+    catHdr.appendChild(h("span",{},cat.i));
+    catHdr.appendChild(h("span",{style:{color:cat.c,fontWeight:"700",fontSize:"12px",textTransform:"uppercase",letterSpacing:".8px",flex:"1"}},cat.l));
+    const cv=h("div",{style:{textAlign:"right"}});
+    cv.appendChild(h("div",{style:{color:cat.c,fontWeight:"700",fontSize:"13px"}},catTotal.toFixed(2)+" zł"));
+    if(persons>1)cv.appendChild(h("div",{style:{color:"#4a3a22",fontSize:"11px"}},"👤 "+(catTotal/persons).toFixed(2)+" zł / os."));
+    catHdr.appendChild(cv);
+    container.appendChild(catHdr);
+    items.forEach(item=>{
+      const cost=parseFloat(item.cost)||0;
+      const row=h("div",{class:"row-item",style:{border:`1px solid ${item.booked?"#7ab07a33":"#2a2015"}`}});
+      const info=h("div",{style:{flex:"1"}});
+      const top=h("div",{style:{display:"flex",alignItems:"flex-start",gap:"8px",flexWrap:"wrap"}});
+      top.appendChild(h("span",{style:{color:item.booked?"#a0d0a0":"#ddd0b0",fontWeight:"600",fontSize:"14px",flex:"1"}},item.label));
+      if(item.booked)top.appendChild(badge("✓ Zarezerwowane","#7ab07a"));
+      const cv2=h("div",{style:{textAlign:"right"}});
+      cv2.appendChild(h("div",{style:{color:cat.c,fontWeight:"700",fontSize:"14px"}},cost.toFixed(2)+" zł"));
+      if(persons>1)cv2.appendChild(h("div",{style:{color:"#4a3a22",fontSize:"11px"}},"👤 "+(cost/persons).toFixed(2)+" zł"));
+      top.appendChild(cv2);
+      info.appendChild(top);
+      if(item.notes)info.appendChild(h("div",{style:{color:"#5a4a30",fontSize:"12px",marginTop:"3px"}},item.notes));
+      row.appendChild(info);
+      const ac=h("div",{style:{display:"flex",gap:"6px",flexShrink:"0"}});
+      const togBtn=h("button",{class:"ghost-btn",style:{color:item.booked?"#7ab07a":"#3a2a15",fontSize:"15px"}},item.booked?"✓":"○");
+      togBtn.addEventListener("click",()=>updateTrip({...trip,estimates:estimates.map(e=>e.id===item.id?{...e,booked:!e.booked}:e)}));
+      const editBtn=h("button",{class:"ghost-btn",style:{color:"#5a4a30",fontSize:"14px"}},"✏️");
+      editBtn.addEventListener("click",()=>{
+        editingId=item.id;fLabel.value=item.label;fCat.value=item.category;fCost.value=item.cost;fNotes.value=item.notes||"";fBooked.checked=item.booked||false;
+        saveBtn.textContent="Zapisz";formTitle.textContent="✏️ Edytuj pozycję";formWrap.style.border="1px solid #c9a96e44";cancelBtn.style.display="";
+        formWrap.scrollIntoView({behavior:"smooth"});
+      });
+      const delBtn=h("button",{class:"ghost-btn",style:{color:"#2a1e0e",fontSize:"15px"}},"✕");
+      delBtn.addEventListener("click",()=>updateTrip({...trip,estimates:estimates.filter(e=>e.id!==item.id)}));
+      ac.appendChild(togBtn);ac.appendChild(editBtn);ac.appendChild(delBtn);
+      row.appendChild(ac);container.appendChild(row);
+    });
+    container.appendChild(h("div",{style:{height:"14px"}}));
+  });
+
+  // Footer total
+  if(estimates.length){
+    const footer=h("div",{style:{background:"#0d0b08",border:"1px solid #3a3020",borderRadius:"12px",padding:"14px 18px",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:"12px",marginTop:"8px"}});
+    const fl=h("div",{});
+    fl.appendChild(h("div",{style:{color:"#4a3a22",fontSize:"11px",textTransform:"uppercase",letterSpacing:"1px"}},"Łączny koszt"));
+    fl.appendChild(h("div",{style:{color:"#f0e6d0",fontSize:"22px",fontFamily:"Georgia,serif",fontWeight:"700",marginTop:"3px"}},totEst.toFixed(2)+" ",h("span",{style:{color:"#5a4a30",fontSize:"14px"}},"zł")));
+    if(persons>1)fl.appendChild(h("div",{style:{color:"#c9a96e",fontSize:"13px",marginTop:"3px"}},"👤 "+(totEst/persons).toFixed(2)+" zł / osoba (×"+persons+")"));
+    const fr=h("div",{style:{textAlign:"right"}});
+    fr.appendChild(h("div",{style:{color:"#4a3a22",fontSize:"11px",textTransform:"uppercase",letterSpacing:"1px"}},"Zarezerwowano"));
+    fr.appendChild(h("div",{style:{color:"#7ab07a",fontSize:"18px",fontFamily:"Georgia,serif",fontWeight:"700",marginTop:"3px"}},totBook.toFixed(2)+" zł"));
+    fr.appendChild(h("div",{style:{color:"#4a3a22",fontSize:"11px",marginTop:"2px"}},"Pozostało: ",h("span",{style:{color:"#d4a04a"}},(totEst-totBook).toFixed(2)+" zł")));
+    footer.appendChild(fl);footer.appendChild(fr);container.appendChild(footer);
+  }
+}
+
+// ── Places Tab ──
+function renderPlaces(trip,container){
+  container.innerHTML="";
+  const places=trip.places||[];
+  const filter=state.plFilter||"all";
+  const done=places.filter(p=>p.visited).length;
+
+  if(places.length){
+    const pb=h("div",{style:{display:"flex",alignItems:"center",gap:"14px",marginBottom:"16px",padding:"10px 13px",background:"#0d0b08",border:"1px solid #2a2015",borderRadius:"10px"}});
+    pb.appendChild(h("div",{style:{flex:"1"}},pBar(pct(done,places.length),"#7ab07a",5)));
+    pb.appendChild(h("span",{style:{color:"#7ab07a",fontWeight:"700",fontSize:"13px",whiteSpace:"nowrap"}},done+"/"+places.length+" odwiedzonych"));
+    container.appendChild(pb);
+  }
+
+  // Filters + Add btn
+  const ftop=h("div",{style:{display:"flex",gap:"7px",marginBottom:"16px",flexWrap:"wrap",alignItems:"center"}});
+  const filterWrap=h("div",{style:{display:"flex",gap:"5px",flex:"1",flexWrap:"wrap"}});
+  const FILTERS=[{id:"all",l:"Wszystkie"},{id:"todo",l:"Do odwiedzenia"},{id:"done",l:"Odwiedzone"},{id:"sight",l:"📍 Miejsca"},{id:"food",l:"🍽️ Jedzenie"},{id:"bar",l:"🍺 Bary"}];
+  FILTERS.forEach(({id,l})=>{
+    const fb=h("button",{class:"filter-btn"+(filter===id?" active":"")},l);
+    fb.addEventListener("click",()=>{state.plFilter=id;updateTrip(trip);});
+    filterWrap.appendChild(fb);
+  });
+  ftop.appendChild(filterWrap);
+  const addBtn=btn("+ Dodaj","btn btn-p",()=>showAddPlace(trip),{style:{fontSize:"12px",padding:"6px 13px"}});
+  ftop.appendChild(addBtn);
+  container.appendChild(ftop);
+
+  const filtered=places.filter(p=>{
+    if(filter==="todo")return!p.visited;
+    if(filter==="done")return p.visited;
+    if(["sight","nature","food","bar","museum"].includes(filter))return p.type===filter;
+    return true;
+  });
+
+  if(!places.length){container.appendChild(h("div",{class:"empty"},h("div",{class:"emoji"},"🗺️"),h("p",{style:{fontSize:"14px"}},"Dodaj co chcesz zobaczyć, zjeść, wypić...")));return;}
+  if(!filtered.length){container.appendChild(h("p",{style:{color:"#3a2a15",fontSize:"13px"}},"Brak wyników."));return;}
+
+  PTYPES.forEach(ptype=>{
+    const items=filtered.filter(p=>p.type===ptype.id);
+    if(!items.length)return;
+    const hdr=h("div",{style:{display:"flex",alignItems:"center",gap:"8px",marginBottom:"8px",borderBottom:"1px solid #2a2015",paddingBottom:"6px"}});
+    hdr.appendChild(h("span",{},ptype.i));
+    hdr.appendChild(h("span",{style:{color:ptype.c,fontWeight:"700",fontSize:"12px",textTransform:"uppercase",letterSpacing:".8px",flex:"1"}},ptype.l));
+    hdr.appendChild(h("span",{style:{color:"#3a2a15",fontSize:"11px"}},items.filter(p=>p.visited).length+"/"+items.length));
+    container.appendChild(hdr);
+    items.forEach(place=>{
+      const row=h("div",{class:"row-item",style:{border:`1px solid ${place.visited?"#7ab07a33":"#2a2015"}`,opacity:place.visited?".72":"1"}});
+      const vb=h("button",{class:"vis-btn",style:{background:place.visited?"#7ab07a33":"#1a1813",border:`2px solid ${place.visited?"#7ab07a":"#3a3020"}`,color:place.visited?"#7ab07a":"#3a2a15"}},place.visited?"✓":"");
+      vb.addEventListener("click",()=>updateTrip({...trip,places:places.map(p=>p.id===place.id?{...p,visited:!p.visited}:p)}));
+      row.appendChild(vb);
+      const info=h("div",{style:{flex:"1"}});
+      const top=h("div",{style:{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}});
+      top.appendChild(h("span",{style:{color:place.visited?"#7ab07a":"#e0d0b0",fontWeight:"700",fontSize:"14px",textDecoration:place.visited?"line-through":"none"}},place.name));
+      if(place.rating)top.appendChild(h("span",{style:{fontSize:"12px"}},"⭐".repeat(parseInt(place.rating))));
+      if(place.visited)top.appendChild(badge("Odwiedzone","#7ab07a"));
+      info.appendChild(top);
+      if(place.address)info.appendChild(h("div",{style:{color:"#4a3a22",fontSize:"12px",marginTop:"2px"}},"📌 "+place.address));
+      if(place.notes)info.appendChild(h("div",{style:{color:"#5a4a30",fontSize:"12px",marginTop:"2px"}},place.notes));
+      if(place.link){
+        const lb=h("a",{href:place.link,target:"_blank",style:{display:"inline-flex",alignItems:"center",gap:"5px",marginTop:"5px",color:"#7a9ab0",fontSize:"12px",fontWeight:"600",textDecoration:"none",background:"rgba(122,154,176,.12)",border:"1px solid rgba(122,154,176,.3)",borderRadius:"6px",padding:"3px 9px"}},"🔗 Otwórz link");
+        info.appendChild(lb);
+      }
+      row.appendChild(info);
+      const ac=h("div",{style:{display:"flex",gap:"5px",flexShrink:"0"}});
+      const eb=h("button",{class:"ghost-btn",style:{color:"#5a4a30",fontSize:"14px"}},"✏️");
+      eb.addEventListener("click",()=>showAddPlace(trip,place));
+      const db2=h("button",{class:"ghost-btn",style:{color:"#2a1e0e",fontSize:"14px"}},"✕");
+      db2.addEventListener("click",()=>updateTrip({...trip,places:places.filter(p=>p.id!==place.id)}));
+      ac.appendChild(eb);ac.appendChild(db2);row.appendChild(ac);
+      container.appendChild(row);
+    });
+    container.appendChild(h("div",{style:{height:"14px"}}));
+  });
+}
+
+function showAddPlace(trip,existing){
+  const bg=openModal([]);const box=bg.querySelector(".modal");box.innerHTML="";
+  const isEdit=!!existing;
+  const days=getDays(trip.startDate,trip.endDate);
+  const fName=inp({placeholder:"np. Zamek w Carcassonne",value:existing?.name||""});
+  const fType=sel({value:existing?.type||"sight"},PTYPES.map(t=>({v:t.id,l:t.i+" "+t.l})));
+  const fAddr=inp({placeholder:"np. ul. Główna 1",value:existing?.address||""});
+  const fRat=sel({value:existing?.rating||""},[{v:"",l:"—"},...[1,2,3,4,5].map(n=>({v:n,l:"⭐".repeat(n)}))]);
+  const fDay=sel({value:existing?.assignedDay||""},[
+    {v:"",l:"— Nie przypisuj do dnia —"},
+    ...days.map((d,i)=>({v:d,l:"Dzień "+(i+1)+" · "+new Date(d+"T12:00:00").toLocaleDateString("pl-PL",{weekday:"short",day:"numeric",month:"short"})}))
+  ]);
+  const fNotes=inp({placeholder:"dlaczego warto, godziny, tips...",value:existing?.notes||""});
+  const fLink=inp({type:"url",placeholder:"https://maps.google.com/...",value:existing?.link||""});
+  const fVis=h("input",{type:"checkbox",style:{accentColor:"#7ab07a",width:"15px",height:"15px",cursor:"pointer"}});
+  if(existing?.visited)fVis.checked=true;
+  box.appendChild(modalHdr(isEdit?"✏️ Edytuj miejsce":"📍 Nowe miejsce",bg));
+  const g=h("div",{style:{display:"grid",gridTemplateColumns:"2fr 1fr",gap:"12px"}});
+  const ga=h("div",{});ga.appendChild(h("label",{class:"lbl"},"Nazwa miejsca"));ga.appendChild(fName);g.appendChild(ga);
+  const gb=h("div",{});gb.appendChild(h("label",{class:"lbl"},"Typ"));gb.appendChild(fType);g.appendChild(gb);
+  const gc=h("div",{});gc.appendChild(h("label",{class:"lbl"},"Adres (opcjonalnie)"));gc.appendChild(fAddr);g.appendChild(gc);
+  const gd=h("div",{});gd.appendChild(h("label",{class:"lbl"},"Ocena"));gd.appendChild(fRat);g.appendChild(gd);
+  if(days.length){
+    const gday=h("div",{style:{gridColumn:"1/-1"}});gday.appendChild(h("label",{class:"lbl"},"📅 Przypisz do dnia"));gday.appendChild(fDay);g.appendChild(gday);
+  }
+  const ge=h("div",{style:{gridColumn:"1/-1"}});ge.appendChild(h("label",{class:"lbl"},"Notatki"));ge.appendChild(fNotes);g.appendChild(ge);
+  const gl=h("div",{style:{gridColumn:"1/-1"}});gl.appendChild(h("label",{class:"lbl"},"🔗 Link (Google Maps, Booking, Tripadvisor...)"));gl.appendChild(fLink);g.appendChild(gl);
+  box.appendChild(g);
+  const bl=h("div",{style:{display:"flex",alignItems:"center",gap:"12px",marginTop:"12px"}});
+  bl.appendChild(h("label",{style:{display:"flex",alignItems:"center",gap:"7px",cursor:"pointer",color:"#9a8a6a",fontSize:"13px"}},fVis,"Już odwiedzone"));
+  bl.appendChild(h("div",{style:{flex:"1"}}));
+  bl.appendChild(btn("Anuluj","btn btn-s",()=>closeModal(bg)));
+  bl.appendChild(btn(isEdit?"Zapisz":"Dodaj","btn btn-p",()=>{
+    if(!fName.value.trim())return alert("Podaj nazwę.");
+    const item={id:existing?.id||uid(),name:fName.value,type:fType.value,address:fAddr.value,rating:fRat.value,notes:fNotes.value,link:fLink.value,visited:fVis.checked,assignedDay:fDay.value||null};
+    const newPlaces=isEdit?(trip.places||[]).map(p=>p.id===item.id?item:p):[...(trip.places||[]),item];
+    updateTrip({...trip,places:newPlaces});closeModal(bg);
+  }));
+  box.appendChild(bl);
+}
+
+// ── Edit Trip ──
+function showEditTrip(trip){
+  const bg=openModal([]);const box=bg.querySelector(".modal");box.innerHTML="";
+  const nName=inp({placeholder:"Nazwa wyjazdu",value:trip.name||""});
+  const nDest=inp({placeholder:"np. Ustrzyki (opcjonalnie)",value:trip.destination||""});
+  const nSD=inp({type:"date",value:trip.startDate||""});
+  const nED=inp({type:"date",value:trip.endDate||""});
+  const nBudget=inp({type:"number",placeholder:"np. 5000",value:trip.budget||""});
+  const nDailyCash=inp({type:"number",placeholder:"np. 2000",value:trip.dailyCash||""});
+  const nPersons=inp({type:"number",min:"1",placeholder:"1",value:trip.persons||"1"});
+  const nNotes=h("textarea",{class:"ifield",style:{resize:"vertical",minHeight:"72px"}});
+  nNotes.value=trip.notes||"";
+  nNotes.addEventListener("focus",()=>nNotes.style.borderColor="#c9a96e");
+  nNotes.addEventListener("blur",()=>nNotes.style.borderColor="#3a3020");
+
+  box.appendChild(modalHdr("✏️ Edytuj wyjazd",bg));
+  box.appendChild(fld("Nazwa",nName));
+  box.appendChild(fld("Cel podróży",nDest));
+  const dg=h("div",{class:"grid2"});
+  dg.appendChild(fld("Data wyjazdu",nSD));
+  dg.appendChild(fld("Data powrotu",nED));
+  box.appendChild(dg);
+  box.appendChild(fld("Liczba osób",nPersons));
+
+  // separator
+  box.appendChild(h("div",{style:{margin:"4px 0 14px",padding:"12px 14px",background:"#111009",borderRadius:"10px",border:"1px solid #2a2015"}},[
+    h("div",{style:{color:"#a08060",fontSize:"11px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"10px"}},"Budżety"),
+    fld("💰 Kosztorys — planowane koszty przed wyjazdem (lot, hotel...)",nBudget),
+    fld("🎒 Kasa dzienna — łączna kasa na wydatki na miejscu (jedzenie, atrakcje...)",nDailyCash),
+  ]));
+
+  box.appendChild(fld("Notatki",nNotes));
+  const btns=h("div",{style:{display:"flex",gap:"10px",justifyContent:"flex-end",marginTop:"6px"}});
+  btns.appendChild(btn("Anuluj","btn btn-g",()=>closeModal(bg)));
+  btns.appendChild(btn("Zapisz","btn btn-p",()=>{
+    updateTrip({...trip,
+      name:nName.value||trip.name,
+      destination:nDest.value,
+      startDate:nSD.value,
+      endDate:nED.value,
+      budget:nBudget.value,
+      dailyCash:nDailyCash.value,
+      persons:parseInt(nPersons.value)||1,
+      notes:nNotes.value,
+    });
+    closeModal(bg);
+  }));
+  box.appendChild(btns);
+}
+
+// ── Split Costs ─────────────────────────────────
+function renderSplit(trip, container){
+  container.innerHTML="";
+  const persons = parseInt(trip.persons)||1;
+  const split = trip.split || { people:[], payments:[] };
+
+  // Totals from estimates + events
+  const estTotal = (trip.estimates||[]).reduce((s,e)=>s+(parseFloat(e.cost)||0),0);
+  const spentTotal = (trip.events||[]).reduce((s,e)=>s+(parseFloat(e.cost)||0),0);
+
+  // People list
+  container.appendChild(h("div",{style:{color:"#a08060",fontSize:"11px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"10px"}},"Osoby w wyjeździe"));
+
+  const peopleWrap = h("div",{style:{marginBottom:"20px"}});
+  const people = split.people.length ? split.people : Array.from({length:persons},(_,i)=>"Osoba "+(i+1));
+
+  const renderPeople = () => {
+    peopleWrap.innerHTML="";
+    people.forEach((name,i)=>{
+      const row=h("div",{style:{display:"flex",gap:"8px",alignItems:"center",marginBottom:"8px"}});
+      const ni=inp({placeholder:"Imię osoby",value:name,style:{flex:"1"}});
+      ni.addEventListener("blur",()=>{
+        people[i]=ni.value||("Osoba "+(i+1));
+        updateTrip({...trip, split:{...split, people:[...people]}});
+      });
+      row.appendChild(ni);
+      peopleWrap.appendChild(row);
+    });
+    const addPersonBtn = btn("+ Dodaj osobę","btn btn-s",()=>{
+      people.push("Osoba "+(people.length+1));
+      updateTrip({...trip, split:{...split, people:[...people]}});
+    },{style:{fontSize:"12px",marginTop:"4px"}});
+    peopleWrap.appendChild(addPersonBtn);
+  };
+  renderPeople();
+  container.appendChild(peopleWrap);
+
+  // Payments
+  container.appendChild(h("div",{style:{color:"#a08060",fontSize:"11px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"10px"}},"Kto zapłacił za co?"));
+
+  const payments = split.payments||[];
+  const payWrap = h("div",{style:{marginBottom:"20px"}});
+
+  const renderPayments = () => {
+    payWrap.innerHTML="";
+    payments.forEach((pay,i)=>{
+      const row=h("div",{style:{background:"#171310",border:"1px solid #2e2418",borderRadius:"10px",padding:"10px 13px",marginBottom:"8px",display:"flex",gap:"10px",alignItems:"center",flexWrap:"wrap"}});
+      // Payer select
+      const ps=h("select",{class:"ifield",style:{flex:"1",minWidth:"100px"}});
+      people.forEach(p=>{const o=h("option",{value:p},p);if(p===pay.payer)o.selected=true;ps.appendChild(o);});
+      ps.addEventListener("change",()=>{payments[i].payer=ps.value;updateTrip({...trip,split:{...split,payments:[...payments]}});});
+      // Description
+      const di=inp({placeholder:"Za co?",value:pay.desc||"",style:{flex:"2",minWidth:"100px"}});
+      di.addEventListener("blur",()=>{payments[i].desc=di.value;updateTrip({...trip,split:{...split,payments:[...payments]}});});
+      // Amount
+      const ai=inp({type:"number",placeholder:"0",value:pay.amount||"",style:{width:"90px"}});
+      ai.addEventListener("blur",()=>{payments[i].amount=ai.value;updateTrip({...trip,split:{...split,payments:[...payments]}});});
+      const zl=h("span",{style:{color:"#5a4a30",fontSize:"13px",flexShrink:"0"}},"zł");
+      const del=h("button",{class:"ghost-btn",style:{color:"#2a1e0e",fontSize:"15px"}},"✕");
+      del.addEventListener("click",()=>{payments.splice(i,1);updateTrip({...trip,split:{...split,payments:[...payments]}});});
+      row.appendChild(ps);row.appendChild(di);row.appendChild(ai);row.appendChild(zl);row.appendChild(del);
+      payWrap.appendChild(row);
+    });
+    const addPayBtn=btn("+ Dodaj wpłatę","btn btn-s",()=>{
+      payments.push({payer:people[0]||"Osoba 1",desc:"",amount:""});
+      updateTrip({...trip,split:{...split,payments:[...payments]}});
+    },{style:{fontSize:"12px"}});
+    payWrap.appendChild(addPayBtn);
+  };
+  renderPayments();
+  container.appendChild(payWrap);
+
+  // Settlement calculation
+  if(payments.length && people.length){
+    const total=payments.reduce((s,p)=>s+(parseFloat(p.amount)||0),0);
+    const perPerson=total/people.length;
+
+    // How much each person paid
+    const paid={};people.forEach(p=>paid[p]=0);
+    payments.forEach(pay=>{if(paid[pay.payer]!==undefined)paid[pay.payer]+=(parseFloat(pay.amount)||0);});
+
+    // Balance: positive = overpaid, negative = underpaid
+    const balance={};people.forEach(p=>balance[p]=paid[p]-perPerson);
+
+    container.appendChild(h("div",{style:{color:"#a08060",fontSize:"11px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"10px"}},"Rozliczenie"));
+
+    // Summary cards
+    const sumGrid=h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:"8px",marginBottom:"20px"}});
+    sumGrid.appendChild(statCard("Łącznie",total,"#c9a96e"));
+    sumGrid.appendChild(statCard("Na osobę",perPerson,"#d4a84a"));
+    container.appendChild(sumGrid);
+
+    // Per person balance
+    const balWrap=h("div",{style:{display:"flex",flexDirection:"column",gap:"8px",marginBottom:"24px"}});
+    people.forEach(person=>{
+      const bal=balance[person];
+      const paidAmt=paid[person];
+      const row=h("div",{style:{background:"#171310",border:`1.5px solid ${bal>0?"#7ab07a44":bal<0?"#e0707044":"#2e2418"}`,borderRadius:"10px",padding:"12px 14px"}});
+      const top=h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"6px"}});
+      top.appendChild(h("span",{style:{color:"#ede0c8",fontWeight:"700",fontSize:"14px"}},person));
+      top.appendChild(h("span",{style:{color:bal>0?"#7ab07a":bal<0?"#e07070":"#6a5535",fontWeight:"700",fontSize:"15px"}},(bal>0?"+":"")+bal.toFixed(2)+" zł"));
+      row.appendChild(top);
+      const sub=h("div",{style:{fontSize:"12px",color:"#5a4a30"}});
+      sub.appendChild(txt("Zapłacił: "));sub.appendChild(h("span",{style:{color:"#c9a96e"}},paidAmt.toFixed(2)+" zł"));
+      sub.appendChild(txt(" · Do zapłacenia: "));sub.appendChild(h("span",{style:{color:"#d4a84a"}},perPerson.toFixed(2)+" zł"));
+      row.appendChild(sub);
+      if(bal<0){
+        const owes=h("div",{style:{marginTop:"8px",fontSize:"12px",color:"#e07070",fontWeight:"600"}});
+        owes.appendChild(txt("➡️ Musi dopłacić: "+Math.abs(bal).toFixed(2)+" zł"));
+        row.appendChild(owes);
+      } else if(bal>0){
+        const gets=h("div",{style:{marginTop:"8px",fontSize:"12px",color:"#7ab07a",fontWeight:"600"}});
+        gets.appendChild(txt("✅ Należy mu się: "+bal.toFixed(2)+" zł"));
+        row.appendChild(gets);
+      }
+      balWrap.appendChild(row);
+    });
+    container.appendChild(balWrap);
+
+    // Transfer instructions
+    const debtors=people.filter(p=>balance[p]<0).map(p=>({name:p,owes:-balance[p]}));
+    const creditors=people.filter(p=>balance[p]>0).map(p=>({name:p,gets:balance[p]}));
+    if(debtors.length&&creditors.length){
+      container.appendChild(h("div",{style:{color:"#a08060",fontSize:"11px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"10px"}},"Przelewy do wykonania"));
+      const transfers=[];
+      const d=[...debtors.map(x=>({...x}))],c=[...creditors.map(x=>({...x}))];
+      let di=0,ci=0;
+      while(di<d.length&&ci<c.length){
+        const amt=Math.min(d[di].owes,c[ci].gets);
+        if(amt>0.01)transfers.push({from:d[di].name,to:c[ci].name,amt});
+        d[di].owes-=amt;c[ci].gets-=amt;
+        if(d[di].owes<0.01)di++;
+        if(c[ci].gets<0.01)ci++;
+      }
+      transfers.forEach(t=>{
+        const tr=h("div",{style:{background:"#171310",border:"1px solid #2e2418",borderRadius:"10px",padding:"10px 14px",marginBottom:"8px",display:"flex",alignItems:"center",gap:"10px"}});
+        tr.appendChild(h("span",{style:{color:"#e07070",fontWeight:"700"}},t.from));
+        tr.appendChild(h("span",{style:{color:"#5a4a30"}},`→ przelewa →`));
+        tr.appendChild(h("span",{style:{color:"#7ab07a",fontWeight:"700"}},t.to));
+        tr.appendChild(h("span",{style:{color:"#c9a96e",fontWeight:"700",marginLeft:"auto"}},t.amt.toFixed(2)+" zł"));
+        container.appendChild(tr);
+      });
+    }
+  }
+}
+
+// ── Currency Converter ──
+const COMMON_CURRENCIES=[
+  {code:"EUR",name:"Euro",symbol:"€"},
+  {code:"USD",name:"Dolar USD",symbol:"$"},
+  {code:"GBP",name:"Funt szterling",symbol:"£"},
+  {code:"NOK",name:"Korona norweska",symbol:"kr"},
+  {code:"SEK",name:"Korona szwedzka",symbol:"kr"},
+  {code:"DKK",name:"Korona duńska",symbol:"kr"},
+  {code:"CZK",name:"Korona czeska",symbol:"Kč"},
+  {code:"HUF",name:"Forint",symbol:"Ft"},
+  {code:"CHF",name:"Frank szwajcarski",symbol:"Fr"},
+  {code:"TRY",name:"Lira turecka",symbol:"₺"},
+  {code:"UAH",name:"Hrywna",symbol:"₴"},
+  {code:"THB",name:"Baht tajski",symbol:"฿"},
+  {code:"JPY",name:"Jen japoński",symbol:"¥"},
+  {code:"USD",name:"Dolar australijski",symbol:"A$"},
+];
+
+function renderCurrency(trip,container){
+  container.innerHTML="";
+  const rates=trip.currencyRates||{};
+
+  // Info
+  container.appendChild(h("p",{style:{color:"#6a5535",fontSize:"13px",marginBottom:"20px",lineHeight:"1.5"}},"Wpisz kurs ręcznie — działa offline. Kurs znajdziesz w Google wpisując np. \"EUR PLN\"."));
+
+  // Rate cards
+  const ratesWrap=h("div",{style:{display:"flex",flexDirection:"column",gap:"10px",marginBottom:"28px"}});
+
+  COMMON_CURRENCIES.forEach(cur=>{
+    const saved=rates[cur.code]||"";
+    const card=h("div",{style:{background:"#171310",border:"1px solid #2e2418",borderRadius:"12px",padding:"14px 16px"}});
+    const top=h("div",{style:{display:"flex",alignItems:"center",gap:"12px"}});
+    const cname=h("div",{style:{flex:"1"}});
+    cname.appendChild(h("div",{style:{color:"#ede0c8",fontWeight:"700",fontSize:"15px"}},cur.symbol+" "+cur.code));
+    cname.appendChild(h("div",{style:{color:"#5a4a30",fontSize:"12px"}},cur.name));
+    top.appendChild(cname);
+    const rateInp=inp({type:"text",inputmode:"decimal",placeholder:"np. 4.28",value:saved,style:{width:"130px",textAlign:"right"}});
+    rateInp.addEventListener("blur",()=>{
+      const newRates={...((trip.currencyRates)||{}), [cur.code]:rateInp.value.replace(",",".")};
+      updateTrip({...trip,currencyRates:newRates});
+    });
+    top.appendChild(rateInp);
+    top.appendChild(h("span",{style:{color:"#5a4a30",fontSize:"13px",flexShrink:"0"}},"PLN"));
+    card.appendChild(top);
+
+    // Quick converter if rate is set
+    if(parseFloat(saved.replace(',','.'))>0){
+      const rate=parseFloat(saved.replace(',','.'));
+      card.appendChild(h("div",{style:{height:"1px",background:"#2a2015",margin:"12px 0"}}));
+      const conv=h("div",{style:{display:"flex",gap:"10px",alignItems:"center",flexWrap:"wrap"}});
+      const amtInp=inp({type:"text",inputmode:"decimal",placeholder:"Kwota",style:{flex:"1",minWidth:"80px"}});
+      const resultPLN=h("div",{style:{color:"#c9a96e",fontWeight:"700",fontSize:"15px",minWidth:"100px",textAlign:"right"}});
+      const resultFOR=h("div",{style:{color:"#7ab07a",fontWeight:"700",fontSize:"15px",minWidth:"100px",textAlign:"right"}});
+
+      amtInp.addEventListener("input",()=>{
+        const v=parseFloat(amtInp.value.replace(',','.'));
+        if(!isNaN(v)&&v>0){
+          resultPLN.textContent=(v*rate).toFixed(2)+" PLN";
+          resultFOR.textContent=(v/rate).toFixed(2)+" "+cur.code;
+        } else {
+          resultPLN.textContent="";resultFOR.textContent="";
+        }
+      });
+
+      const col1=h("div",{style:{display:"flex",alignItems:"center",gap:"8px",flex:"1"}});
+      col1.appendChild(amtInp);
+      col1.appendChild(h("span",{style:{color:"#5a4a30",fontSize:"13px"}},"→"));
+      col1.appendChild(resultPLN);
+      conv.appendChild(col1);
+
+      card.appendChild(conv);
+      // Also PLN → foreign
+      const conv2=h("div",{style:{display:"flex",gap:"10px",alignItems:"center",marginTop:"8px"}});
+      const plnInp=inp({type:"text",inputmode:"decimal",placeholder:"Kwota PLN",style:{flex:"1",minWidth:"80px"}});
+      const resultFor2=h("div",{style:{color:"#7ab07a",fontWeight:"700",fontSize:"15px",minWidth:"100px",textAlign:"right"}});
+      plnInp.addEventListener("input",()=>{
+        const v=parseFloat(plnInp.value.replace(',','.'));
+        if(!isNaN(v)&&v>0){resultFor2.textContent=(v/rate).toFixed(2)+" "+cur.code;}
+        else resultFor2.textContent="";
+      });
+      conv2.appendChild(plnInp);
+      conv2.appendChild(h("span",{style:{color:"#5a4a30",fontSize:"13px"}},"→"));
+      conv2.appendChild(resultFor2);
+      card.appendChild(conv2);
+    }
+
+    ratesWrap.appendChild(card);
+  });
+
+  container.appendChild(ratesWrap);
+
+  // Quick reference table for active currencies
+  const active=COMMON_CURRENCIES.filter(c=>parseFloat(rates[c.code])>0);
+  if(active.length){
+    container.appendChild(h("div",{style:{color:"#a08060",fontSize:"11px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"10px"}},"Tabela porównawcza"));
+    const amounts=[1,5,10,20,50,100,200,500];
+    const tbl=h("div",{style:{background:"#171310",border:"1px solid #2e2418",borderRadius:"12px",padding:"14px",overflowX:"auto"}});
+    const hrow=h("div",{style:{display:"flex",gap:"8px",marginBottom:"8px",borderBottom:"1px solid #2a2015",paddingBottom:"8px"}});
+    hrow.appendChild(h("div",{style:{color:"#5a4a30",fontSize:"11px",fontWeight:"700",width:"50px"}},"PLN"));
+    active.forEach(c=>hrow.appendChild(h("div",{style:{color:c.color||"#c9a96e",fontSize:"11px",fontWeight:"700",flex:"1",textAlign:"right"}},c.code)));
+    tbl.appendChild(hrow);
+    amounts.forEach(amt=>{
+      const row=h("div",{style:{display:"flex",gap:"8px",padding:"5px 0",borderBottom:"1px solid #1e1a12"}});
+      row.appendChild(h("div",{style:{color:"#ede0c8",fontSize:"13px",fontWeight:"600",width:"50px"}},amt+" zł"));
+      active.forEach(c=>{
+        const r=parseFloat(rates[c.code]);
+        row.appendChild(h("div",{style:{color:"#9a8060",fontSize:"13px",flex:"1",textAlign:"right"}},(amt/r).toFixed(2)));
+      });
+      tbl.appendChild(row);
+    });
+    container.appendChild(tbl);
+  }
+}
+
+// ── Trip Detail ──
+function renderTripDetail(trip){
+  const app=document.getElementById("app");app.innerHTML="";
+  const days=getDays(trip.startDate,trip.endDate);
+  const events=trip.events||[];
+  const db=trip.dayBudgets||{};
+  const totSpent=events.reduce((s,e)=>s+(parseFloat(e.cost)||0),0);
+  const totBudget=parseFloat(trip.budget)||0;       // kosztorys
+  const dailyCash=parseFloat(trip.dailyCash)||0;    // kasa dzienna
+  const bPct=pct(totSpent,dailyCash||totBudget);
+
+  // Back btn + Edit btn row
+  const topRow=h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"18px"}});
+  topRow.appendChild(btn("← Wyjazdy","btn btn-s",()=>{state.selId=null;render();},{style:{fontSize:"12px",letterSpacing:"1px",textTransform:"uppercase"}}));
+  topRow.appendChild(btn("✏️ Edytuj wyjazd","btn btn-g",()=>showEditTrip(trip),{style:{fontSize:"12px"}}));
+  app.appendChild(topRow);
+
+  // Header
+  const hdr=h("div",{style:{marginBottom:"22px"}});
+  const htop=h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:"14px"}});
+  const hleft=h("div",{});
+  hleft.appendChild(h("h2",{style:{margin:"0",fontSize:"28px",color:"#f0e6d0",fontFamily:"Georgia,serif",fontWeight:"700"}},trip.name));
+  const hsub=h("p",{style:{margin:"4px 0 0",color:"#6a5a3a",fontSize:"13px"}});
+  if(trip.destination)hsub.appendChild(txt("📍 "+trip.destination+" · "));
+  if(trip.startDate)hsub.appendChild(txt(fmtDate(trip.startDate)));
+  if(trip.endDate)hsub.appendChild(txt(" — "+fmtDate(trip.endDate)));
+  if(days.length){const ds=h("span",{style:{color:"#c9a96e"}}," · "+days.length+" dni");hsub.appendChild(ds);}
+  if((trip.persons||1)>1)hsub.appendChild(h("span",{style:{color:"#9a8a6a"}}," · 👤 "+trip.persons+" os."));
+  hleft.appendChild(hsub);htop.appendChild(hleft);
+
+  // Budget summary in header
+  const hright=h("div",{style:{display:"flex",flexDirection:"column",gap:"8px",minWidth:"160px"}});
+  if(totBudget>0){
+    const kb=h("div",{style:{background:"#171310",border:"1px solid #2e2418",borderRadius:"10px",padding:"8px 12px"}});
+    kb.appendChild(h("div",{style:{color:"#6a5535",fontSize:"10px",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"2px"}},"💰 Kosztorys"));
+    kb.appendChild(h("div",{style:{color:"#c9a96e",fontSize:"16px",fontFamily:"Georgia,serif",fontWeight:"700"}},totBudget.toFixed(0)+" zł"));
+    hright.appendChild(kb);
+  }
+  if(dailyCash>0){
+    const dc=h("div",{style:{background:"#171310",border:"1px solid #2e2418",borderRadius:"10px",padding:"8px 12px"}});
+    dc.appendChild(h("div",{style:{color:"#6a5535",fontSize:"10px",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"2px"}},"🎒 Kasa dzienna"));
+    const dcval=h("div",{style:{display:"flex",alignItems:"baseline",gap:"4px"}});
+    dcval.appendChild(h("span",{style:{color:bPct>100?"#e07070":"#d4a84a",fontSize:"16px",fontFamily:"Georgia,serif",fontWeight:"700"}},totSpent.toFixed(0)));
+    dcval.appendChild(h("span",{style:{color:"#4a3a22",fontSize:"13px"}},"/ "+dailyCash.toFixed(0)+" zł"));
+    dc.appendChild(dcval);
+    dc.appendChild(pBar(bPct,null,3));
+    const rem=dailyCash-totSpent;
+    dc.appendChild(h("div",{style:{fontSize:"11px",color:rem<0?"#e07070":"#7ab07a",marginTop:"3px",fontWeight:"700"}},(rem>=0?"Zostało: ":"Przekroczono: ")+Math.abs(rem).toFixed(0)+" zł"));
+    hright.appendChild(dc);
+  }
+  if(totBudget>0||dailyCash>0)htop.appendChild(hright);
+  hdr.appendChild(htop);app.appendChild(hdr);
+
+  // Tabs
+  const TABS=[["estimate","💰 Kosztorys"],["itinerary","Plan"],["places","📍 Miejsca"],["budget","Budżet"],["split","👥 Podział"],["currency","💱 Waluty"],["notes","Notatki"]];
+  const tabsEl=h("div",{class:"tabs"});
+  TABS.forEach(([k,l])=>{
+    const t=h("button",{class:"tab"+(state.tab===k?" active":"")},l);
+    t.addEventListener("click",()=>{state.tab=k;renderTripDetail(trip);});
+    tabsEl.appendChild(t);
+  });
+  app.appendChild(tabsEl);
+
+  const content=h("div",{});app.appendChild(content);
+
+  if(state.tab==="estimate"){renderEstimate(trip,content);}
+  else if(state.tab==="itinerary"){
+    if(!days.length){content.appendChild(h("p",{style:{color:"#4a3a22"}},"Ustaw daty wyjazdu."));return;}
+    days.forEach((day,i)=>{
+      const dayEvs=events.filter(e=>e.date===day).sort((a,b)=>a.time>b.time?1:-1);
+      const daySpent=dayEvs.reduce((s,e)=>s+(parseFloat(e.cost)||0),0);
+      const dayPlan=parseFloat(db[day])||0;const over=dayPlan>0&&daySpent>dayPlan;
+      const dWrap=h("div",{style:{marginBottom:"20px"}});
+      const dtop=h("div",{style:{display:"flex",alignItems:"center",gap:"10px",marginBottom:"10px"}});
+      dtop.appendChild(h("div",{style:{width:"26px",height:"26px",borderRadius:"50%",background:"#c9a96e15",border:"1px solid #c9a96e44",display:"flex",alignItems:"center",justifyContent:"center",color:"#c9a96e",fontSize:"11px",fontWeight:"700",flexShrink:"0",textAlign:"center",lineHeight:"26px"}},String(i+1)));
+      const dtitle=h("div",{style:{flex:"1"}});
+      dtitle.appendChild(h("div",{style:{color:"#d0c0a0",fontWeight:"700",fontSize:"14px",fontFamily:"Georgia,serif"}},new Date(day+"T12:00:00").toLocaleDateString("pl-PL",{weekday:"long",day:"numeric",month:"long"})));
+      if(dayPlan>0||daySpent>0){
+        const di=h("div",{style:{display:"flex",alignItems:"center",gap:"8px",marginTop:"3px"}});
+        if(dayPlan>0){const pw=h("div",{style:{width:"90px"}});pw.appendChild(pBar(pct(daySpent,dayPlan),null,3));di.appendChild(pw);}
+        di.appendChild(h("span",{style:{fontSize:"11px",color:over?"#e07070":"#5a4a30"}},daySpent.toFixed(2)+(dayPlan>0?" / "+dayPlan:"")+" zł"+(over?" ⚠️":"")));
+        dtitle.appendChild(di);
+      }
+      dtop.appendChild(dtitle);
+      const addB=btn("+ Dodaj","btn btn-g",()=>showAddEvent(day,trip),{style:{padding:"5px 11px",fontSize:"12px"}});
+      dtop.appendChild(addB);dWrap.appendChild(dtop);
+
+      const evList=h("div",{style:{marginLeft:"36px",display:"flex",flexDirection:"column",gap:"7px"}});
+
+      // Assigned places for this day
+      const dayPlaces=(trip.places||[]).filter(p=>p.assignedDay===day);
+      dayPlaces.forEach(place=>{
+        const ptype=gPType(place.type);
+        const prow=h("div",{style:{background:"rgba(201,169,110,.06)",border:"1px dashed rgba(201,169,110,.3)",borderRadius:"10px",padding:"9px 13px",display:"flex",gap:"9px",alignItems:"center"}});
+        prow.appendChild(h("div",{style:{fontSize:"16px",flexShrink:"0"}},ptype.i));
+        const pi=h("div",{style:{flex:"1"}});
+        pi.appendChild(h("div",{style:{color:"#c9a96e",fontWeight:"600",fontSize:"13px"}},place.name));
+        if(place.address)pi.appendChild(h("div",{style:{color:"#5a4a30",fontSize:"11px"}},"📌 "+place.address));
+        if(place.link){
+          const plb=h("a",{href:place.link,target:"_blank",style:{display:"inline-flex",alignItems:"center",gap:"4px",marginTop:"4px",color:"#7a9ab0",fontSize:"11px",fontWeight:"600",textDecoration:"none",background:"rgba(122,154,176,.1)",border:"1px solid rgba(122,154,176,.25)",borderRadius:"5px",padding:"2px 7px"}},"🔗 Link");
+          pi.appendChild(plb);
+        }
+        prow.appendChild(pi);
+        if(place.visited){
+          prow.appendChild(h("span",{style:{color:"#7ab07a",fontSize:"12px",fontWeight:"700"}},"✓"));
+        } else {
+          const vb=h("button",{class:"ghost-btn",style:{color:"#5a4a30",fontSize:"12px",border:"1px solid #3a2e1e",borderRadius:"6px",padding:"3px 8px"}},"Odwiedzone?");
+          vb.addEventListener("click",()=>updateTrip({...trip,places:(trip.places||[]).map(p=>p.id===place.id?{...p,visited:true}:p)}));
+          prow.appendChild(vb);
+        }
+        evList.appendChild(prow);
+      });
+
+      if(!dayEvs.length && !dayPlaces.length)dWrap.appendChild(h("p",{style:{color:"#2a1e0e",fontSize:"13px",marginLeft:"36px"}},"Brak wpisów."));
+
+      dayEvs.forEach(ev=>{
+        const cat=gCat(ev.category);
+        const row=h("div",{class:"row-item"});
+        row.appendChild(h("div",{style:{width:"26px",height:"26px",borderRadius:"7px",background:cat.c+"18",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"13px",flexShrink:"0"}},cat.i));
+        const ei=h("div",{style:{flex:"1"}});
+        const et=h("div",{style:{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}});
+        et.appendChild(h("span",{style:{color:"#ddd0b0",fontWeight:"600",fontSize:"13px"}},ev.title));
+        if(ev.time)et.appendChild(h("span",{style:{color:"#4a3a22",fontSize:"12px"}},ev.time));
+        if(parseFloat(ev.cost)>0)et.appendChild(h("span",{style:{color:cat.c,fontWeight:"700",fontSize:"13px",marginLeft:"auto"}},parseFloat(ev.cost).toFixed(2)+" zł"));
+        ei.appendChild(et);
+        if(ev.notes)ei.appendChild(h("p",{style:{margin:"2px 0 0",color:"#4a3a22",fontSize:"12px"}},ev.notes));
+        row.appendChild(ei);
+        const db2=h("button",{class:"ghost-btn",style:{color:"#2a1e0e",fontSize:"14px"}},"✕");
+        db2.addEventListener("click",()=>updateTrip({...trip,events:events.filter(e=>e.id!==ev.id)}));
+        row.appendChild(db2);evList.appendChild(row);
+      });
+      dWrap.appendChild(evList);content.appendChild(dWrap);
+    });
+  }
+  else if(state.tab==="places"){renderPlaces(trip,content);}
+  else if(state.tab==="budget"){
+    const BSUBS=[["overview","Przegląd"],["daily","Dziennie"],["categories","Kategorie"]];
+    const brow=h("div",{style:{display:"flex",gap:"6px",marginBottom:"18px",flexWrap:"wrap",alignItems:"center"}});
+    BSUBS.forEach(([k,l])=>{const b=h("button",{class:"sub-tab"+(state.bSub===k?" active":"")},l);b.addEventListener("click",()=>{state.bSub=k;renderTripDetail(trip);});brow.appendChild(b);});
+    brow.appendChild(h("div",{style:{flex:"1"}}));
+    brow.appendChild(btn("⚙️ Planuj budżet","btn btn-g",()=>showBudgetPlanner(trip),{style:{fontSize:"12px",padding:"6px 13px"}}));
+    content.appendChild(brow);
+    if(state.bSub==="overview"){
+      const sg=h("div",{class:"grid3",style:{marginBottom:"20px"}});
+      if(totBudget>0)sg.appendChild(statCard("💰 Kosztorys",totBudget,"#c9a96e"));
+      if(dailyCash>0){
+        sg.appendChild(statCard("🎒 Kasa dzienna",dailyCash,"#d4a84a"));
+        sg.appendChild(statCard("Wydano",totSpent,totSpent>dailyCash?"#e07070":"#d0c0a0"));
+        sg.appendChild(statCard("Pozostało",dailyCash-totSpent,dailyCash-totSpent<0?"#e07070":"#7ab07a"));
+      } else {
+        sg.appendChild(statCard("Wydano",totSpent,"#d0c0a0"));
+      }
+      sg.appendChild(statCard("Śr. dziennie",days.length?totSpent/days.length:0,"#9a8a6a"));
+      content.appendChild(sg);
+      // Chart
+      const chartWrap=h("div",{style:{background:"#0d0b08",border:"1px solid #2a2015",borderRadius:"12px",padding:"16px 18px",overflowX:"auto"}});
+      if(days.length){
+        const data=days.map(d=>({d,spent:events.filter(e=>e.date===d).reduce((s,e)=>s+(parseFloat(e.cost)||0),0),budget:parseFloat(db[d])||0}));
+        const maxV=Math.max(...data.map(r=>Math.max(r.spent,r.budget,1)),1);
+        const chart=h("div",{style:{display:"flex",alignItems:"flex-end",gap:"5px",minWidth:days.length*48+"px",height:"110px"}});
+        data.forEach(({d,spent,budget})=>{
+          const sH=Math.round((spent/maxV)*100),bH=Math.round((budget/maxV)*100);const over=spent>budget&&budget>0;
+          const col=h("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",flex:"1",minWidth:"38px"}});
+          if(spent>0)col.appendChild(h("div",{style:{fontSize:"9px",color:over?"#e07070":"#7a6a4a",marginBottom:"2px",fontWeight:"700"}},spent.toFixed(0)));
+          const bars=h("div",{style:{display:"flex",alignItems:"flex-end",gap:"2px",height:"80px"}});
+          if(budget>0)bars.appendChild(h("div",{style:{width:"10px",height:Math.max(bH,2)+"%",background:"#c9a96e1a",border:"1px solid #c9a96e44",borderRadius:"2px 2px 0 0"}}));
+          bars.appendChild(h("div",{style:{width:"16px",height:Math.max(sH,spent>0?2:0)+"%",background:over?"#e07070bb":"#c9a96ecc",borderRadius:"3px 3px 0 0",minHeight:spent>0?"3px":"0"}}));
+          col.appendChild(bars);
+          col.appendChild(h("div",{style:{fontSize:"9px",color:"#4a3a22",marginTop:"3px",textAlign:"center"}},new Date(d+"T12:00:00").toLocaleDateString("pl-PL",{day:"numeric",month:"numeric"})));
+          chart.appendChild(col);
+        });
+        chartWrap.appendChild(chart);
+      } else chartWrap.appendChild(h("p",{style:{color:"#3a2a15",fontSize:"13px"}},"Brak danych."));
+      content.appendChild(chartWrap);
+    }
+    else if(state.bSub==="daily"){
+      if(!days.length){content.appendChild(h("p",{style:{color:"#3a2a15"}},"Brak danych."));return;}
+      days.forEach((day,i)=>{
+        const dayEvs=events.filter(e=>e.date===day);
+        const spent=dayEvs.reduce((s,e)=>s+(parseFloat(e.cost)||0),0);
+        const plan=parseFloat(db[day])||0;const saldo=plan-spent;const over=plan>0&&spent>plan;
+        const row=h("div",{style:{background:"#0d0b08",border:`1px solid ${over?"#e0707033":"#2a2015"}`,borderRadius:"10px",padding:"11px 13px",marginBottom:"8px"}});
+        const rt=h("div",{style:{display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap"}});
+        rt.appendChild(h("span",{style:{color:"#c9a96e",fontSize:"12px",fontWeight:"700",width:"22px"}},"D"+(i+1)));
+        rt.appendChild(h("span",{style:{color:"#c0b090",fontSize:"13px",fontWeight:"600",flex:"1"}},new Date(day+"T12:00:00").toLocaleDateString("pl-PL",{weekday:"short",day:"numeric",month:"short"})));
+        const rv=h("div",{style:{display:"flex",gap:"10px",fontSize:"12px",flexWrap:"wrap"}});
+        rv.appendChild(h("span",{style:{color:"#4a3a22"}},"Plan: ",h("span",{style:{color:plan>0?"#c9a96e":"#2a1e0e"}},plan>0?plan.toFixed(2):"—")));
+        rv.appendChild(h("span",{style:{color:"#4a3a22"}},"Wydano: ",h("span",{style:{color:spent>0?(over?"#e07070":"#d0c0a0"):"#2a1e0e",fontWeight:spent>0?"700":"400"}},spent>0?spent.toFixed(2):"—")));
+        if(plan>0)rv.appendChild(h("span",{style:{color:"#4a3a22"}},"Saldo: ",h("span",{style:{color:saldo<0?"#e07070":"#7ab07a",fontWeight:"700"}},(saldo>=0?"+":"")+saldo.toFixed(2))));
+        rt.appendChild(rv);
+        if(over)rt.appendChild(badge("⚠️ Przekroczono","#e07070"));
+        row.appendChild(rt);
+        if(plan>0||spent>0){const pb=h("div",{style:{marginTop:"8px"}});pb.appendChild(pBar(pct(spent,plan),null,4));row.appendChild(pb);}
+        const catMap={};dayEvs.forEach(e=>{catMap[e.category]=(catMap[e.category]||0)+(parseFloat(e.cost)||0);});
+        if(Object.keys(catMap).length){
+          const ct=h("div",{style:{display:"flex",gap:"5px",marginTop:"7px",flexWrap:"wrap"}});
+          Object.entries(catMap).forEach(([cid,v])=>{const cat=gCat(cid);ct.appendChild(h("span",{style:{fontSize:"11px",color:cat.c,background:cat.c+"15",borderRadius:"4px",padding:"1px 7px"}},cat.i+" "+v.toFixed(2)));});
+          row.appendChild(ct);
+        }
+        content.appendChild(row);
+      });
+    }
+    else if(state.bSub==="categories"){
+      const cWrap=h("div",{style:{background:"#0d0b08",border:"1px solid #2a2015",borderRadius:"12px",padding:"16px 18px"}});
+      const tots={};events.forEach(e=>{tots[e.category]=(tots[e.category]||0)+(parseFloat(e.cost)||0);});
+      const total=Object.values(tots).reduce((a,b)=>a+b,0);
+      if(!total){cWrap.appendChild(h("p",{style:{color:"#3a2a15",fontSize:"13px"}},"Brak wydatków."));}
+      else CATS.forEach(cat=>{
+        const val=tots[cat.id]||0;if(!val)return;const p2=(val/total)*100;
+        const cRow=h("div",{style:{marginBottom:"10px"}});
+        const cl=h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:"4px"}});
+        cl.appendChild(h("span",{style:{color:"#c0b090",fontSize:"13px"}},cat.i+" "+cat.l));
+        const cr=h("span",{style:{color:cat.c,fontSize:"13px",fontWeight:"700"}},val.toFixed(2)+" zł ");
+        cr.appendChild(h("span",{style:{color:"#4a3a22",fontWeight:"400"}},"("+p2.toFixed(0)+"%)"));
+        cl.appendChild(cr);cRow.appendChild(cl);cRow.appendChild(pBar(p2,cat.c,4));cWrap.appendChild(cRow);
+      });
+      content.appendChild(cWrap);
+    }
+  }
+  else if(state.tab==="split"){renderSplit(trip,content);}
+  else if(state.tab==="currency"){renderCurrency(trip,content);}
+  else if(state.tab==="notes"){
+    const nta=h("textarea",{class:"ifield",style:{resize:"vertical",minHeight:"260px",width:"100%"}});
+    nta.value=trip.notes||"";nta.placeholder="Notatki, linki, pomysły...";
+    nta.addEventListener("focus",()=>nta.style.borderColor="#c9a96e");nta.addEventListener("blur",()=>nta.style.borderColor="#3a3020");
+    nta.addEventListener("input",()=>updateTrip({...trip,notes:nta.value}));
+    content.appendChild(nta);content.appendChild(h("p",{style:{color:"#2a1e0e",fontSize:"12px",marginTop:"8px"}},"Zmiany zapisują się automatycznie."));
+  }
+
+  // Export button
+  const expRow=h("div",{style:{marginTop:"32px",paddingTop:"16px",borderTop:"1px solid #1e1a12",display:"flex",justifyContent:"flex-end"}});
+  expRow.appendChild(btn("📊 Eksport do Excel (CSV)","btn btn-s",()=>exportTrip(trip),{style:{fontSize:"12px"}}));
+  app.appendChild(expRow);
+}
+
+// ── Trip List ──
+// ── Backup ──────────────────────────────────────
+function exportBackup(){
+  const data={version:1,exportDate:new Date().toISOString(),trips:state.trips};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  const date=new Date().toISOString().split("T")[0];
+  a.href=url;a.download="wyjazdy-klm-backup-"+date+".json";
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importBackup(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      const imported=data.trips||data;
+      if(!Array.isArray(imported))return alert("Nieprawidłowy plik backup.");
+      const mode=confirm("Kliknij OK żeby DODAĆ "+imported.length+" wyjazdów do istniejących.\nKliknij Anuluj żeby ZASTĄPIĆ wszystkie dane.");
+      let newTrips;
+      if(mode){
+        // Merge: add only trips with new IDs
+        const existingIds=new Set(state.trips.map(t=>String(t.id)));
+        const toAdd=imported.filter(t=>!existingIds.has(String(t.id)));
+        newTrips=[...state.trips,...toAdd];
+        alert("✅ Dodano "+toAdd.length+" nowych wyjazdów. Pominięto "+(imported.length-toAdd.length)+" duplikatów.");
+      } else {
+        newTrips=imported;
+        alert("✅ Zastąpiono danymi z backupu ("+imported.length+" wyjazdów).");
+      }
+      state.trips=newTrips;
+      saveData();
+      render();
+    }catch(err){
+      alert("Błąd odczytu pliku. Upewnij się że to plik backup z Wyjazdy KLM.");
+    }
+  };
+  reader.readAsText(file);
+  e.target.value="";
+}
+
+// ── Trip List ──
+function renderList(){
+  const app=document.getElementById("app");app.innerHTML="";
+  const viewMode=state.listView||"active";
+
+  // Header
+  const hdr=h("div",{class:"app-hdr"});
+  const htop=h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:"14px"}});
+  const hl=h("div",{});
+  hl.appendChild(h("h1",{class:"app-title"},"Wyjazdy KLM"));
+  hl.appendChild(h("p",{class:"app-sub"},"Aktywny planer podróży"));
+  htop.appendChild(hl);
+  htop.appendChild(btn("+ Nowy wyjazd","btn btn-p",showNewTrip));
+  hdr.appendChild(htop);
+
+  // Backup row
+  const backupRow=h("div",{style:{display:"flex",gap:"8px",marginTop:"14px",flexWrap:"wrap"}});
+  backupRow.appendChild(btn("📤 Eksport backup (JSON)","btn btn-s",exportBackup,{style:{fontSize:"12px"}}));
+  const importLabel=h("label",{style:{cursor:"pointer"}});
+  importLabel.appendChild(h("span",{class:"btn btn-s",style:{fontSize:"12px",display:"inline-block"}},"📥 Importuj backup (JSON)"));
+  const importInput=h("input",{type:"file",accept:".json",style:{display:"none"}});
+  importInput.addEventListener("change",e=>importBackup(e));
+  importLabel.appendChild(importInput);
+  backupRow.appendChild(importLabel);
+  hdr.appendChild(backupRow);app.appendChild(hdr);
+
+  // View switcher - always show
+  const switcher=h("div",{style:{display:"flex",gap:"6px",marginBottom:"22px",flexWrap:"wrap"}});
+  [["active","🗺️ Aktywne"],["archive","📦 Archiwum"],["compare","📊 Porównanie"]].forEach(([k,l])=>{
+    const b=h("button",{class:"sub-tab"+(viewMode===k?" active":"")},l);
+    b.addEventListener("click",()=>{state.listView=k;renderList();});
+    switcher.appendChild(b);
+  });
+  app.appendChild(switcher);
+
+  if(!state.trips.length){
+    const empty=h("div",{class:"empty"});
+    empty.appendChild(h("div",{class:"emoji"},"🏔️"));
+    empty.appendChild(h("h3",{},"Gotowy na przygodę?"));
+    empty.appendChild(h("p",{},"Dodaj wyjazd i planuj budżet dzień po dniu."));
+    empty.appendChild(btn("Stwórz pierwszy wyjazd","btn btn-p",showNewTrip));
+    app.appendChild(empty);
+    return;
+  }
+
+  const active=state.trips.filter(t=>!t.archived);
+  const archived=state.trips.filter(t=>t.archived);
+
+  // ── ACTIVE / ARCHIVE card grid ──
+  if(viewMode==="active"||viewMode==="archive"){
+    const list=viewMode==="active"?active:archived;
+    if(!list.length){
+      const empty=h("div",{class:"empty"});
+      empty.appendChild(h("div",{class:"emoji"},viewMode==="archive"?"📦":"🗺️"));
+      empty.appendChild(h("p",{},viewMode==="archive"?"Brak wyjazdów w archiwum.":"Brak aktywnych wyjazdów."));
+      app.appendChild(empty);
+      return;
+    }
+    const grid=h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:"16px"}});
+    list.forEach(trip=>{
+      const numDays=getDays(trip.startDate,trip.endDate).length;
+      const spent=(trip.events||[]).reduce((s,e)=>s+(parseFloat(e.cost)||0),0);
+      const estTotal=(trip.estimates||[]).reduce((s,e)=>s+(parseFloat(e.cost)||0),0);
+      const budget=parseFloat(trip.budget)||0;
+      const card=h("div",{class:"card"});
+      card.addEventListener("click",()=>{state.selId=trip.id;state.tab="estimate";render();});
+      card.appendChild(h("div",{style:{position:"absolute",top:"0",right:"0",width:"100px",height:"100px",background:"radial-gradient(circle at top right,rgba(201,169,110,.1),transparent 70%)",pointerEvents:"none"}}));
+      // Archive badge
+      if(trip.archived)card.appendChild(h("div",{style:{position:"absolute",top:"12px",left:"12px"}},[badge("📦 Archiwum","#6a7a8a")]));
+      card.appendChild(h("div",{style:{fontSize:"24px",marginBottom:"10px"}},"🏔️"));
+      card.appendChild(h("div",{class:"trip-name"},trip.name));
+      if(trip.destination)card.appendChild(h("div",{class:"trip-dest"},"📍 "+trip.destination));
+      const badges=h("div",{style:{display:"flex",gap:"6px",flexWrap:"wrap",marginBottom:"12px"}});
+      if(trip.startDate)badges.appendChild(badge(fmtShort(trip.startDate),"#c9a96e"));
+      if(numDays>0)badges.appendChild(badge(numDays+" dni","#7ab07a"));
+      if((trip.events||[]).length>0)badges.appendChild(badge((trip.events||[]).length+" wpisów","#7a7ab0"));
+      card.appendChild(badges);
+      if(estTotal>0){
+        const persons=parseInt(trip.persons)||1;
+        const ei=h("div",{style:{display:"flex",justifyContent:"space-between",fontSize:"13px",marginBottom:"6px"}});
+        ei.appendChild(h("span",{style:{color:"#a08060"}},"💰 Kosztorys: ",h("span",{style:{color:"#c9a96e",fontWeight:"700"}},estTotal.toFixed(0)+" zł")));
+        if(persons>1)ei.appendChild(h("span",{style:{color:"#6a5535"}},"👤 "+(estTotal/persons).toFixed(0)+" zł/os."));
+        card.appendChild(ei);
+      }
+      if(spent>0){
+        const si=h("div",{style:{fontSize:"13px",color:"#a08060",marginBottom:"6px"}});
+        si.appendChild(txt("🎒 Wydano na miejscu: "));si.appendChild(h("span",{style:{color:"#d4a84a",fontWeight:"700"}},spent.toFixed(0)+" zł"));
+        card.appendChild(si);
+      }
+      const btnsRow=h("div",{style:{display:"flex",gap:"8px",justifyContent:"flex-end",marginTop:"14px"}});
+      // Archive toggle
+      const archBtn=h("button",{class:"btn btn-s",style:{padding:"6px 12px",fontSize:"12px"}},trip.archived?"📤 Przywróć":"📦 Archiwum");
+      archBtn.addEventListener("click",e=>{e.stopPropagation();updateTrip({...trip,archived:!trip.archived});});
+      btnsRow.appendChild(archBtn);
+      const db2=h("button",{class:"btn btn-danger",style:{padding:"6px 12px",fontSize:"12px"}},"🗑 Usuń");
+      db2.addEventListener("click",e=>{
+        e.stopPropagation();
+        if(db2.dataset.confirm==="1"){state.trips=state.trips.filter(t=>t.id!==trip.id);saveData();render();}
+        else{db2.textContent="Na pewno?";db2.dataset.confirm="1";setTimeout(()=>{if(db2.dataset.confirm==="1"){db2.textContent="🗑 Usuń";db2.dataset.confirm="";}},3000);}
+      });
+      btnsRow.appendChild(db2);card.appendChild(btnsRow);grid.appendChild(card);
+    });
+    app.appendChild(grid);
+  }
+
+  // ── COMPARE view ──
+  if(viewMode==="compare"){
+    const all=[...state.trips].sort((a,b)=>(a.startDate||"9999").localeCompare(b.startDate||"9999"));
+    if(!all.length){app.appendChild(h("p",{style:{color:"#5a4a30"}},"Brak wyjazdów do porównania."));return;}
+
+    // Trend chart
+    app.appendChild(h("div",{style:{color:"#a08060",fontSize:"11px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"12px"}},"📈 Trend kosztów"));
+    const chartWrap=h("div",{style:{background:"#171310",border:"1px solid #2e2418",borderRadius:"14px",padding:"18px",marginBottom:"24px",overflowX:"auto"}});
+    const chartData=all.map(t=>({
+      name:t.name,
+      est:(t.estimates||[]).reduce((s,e)=>s+(parseFloat(e.cost)||0),0),
+      spent:(t.events||[]).reduce((s,e)=>s+(parseFloat(e.cost)||0),0),
+      persons:parseInt(t.persons)||1,
+    }));
+    const maxV=Math.max(...chartData.map(d=>Math.max(d.est,d.spent,1)),1);
+    const chart=h("div",{style:{display:"flex",alignItems:"flex-end",gap:"8px",minWidth:all.length*90+"px",height:"160px"}});
+    chartData.forEach(({name,est,spent,persons})=>{
+      const eH=Math.round((est/maxV)*130);
+      const sH=Math.round((spent/maxV)*130);
+      const col=h("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",flex:"1",minWidth:"80px"}});
+      if(est>0)col.appendChild(h("div",{style:{fontSize:"10px",color:"#c9a96e",marginBottom:"3px",fontWeight:"700",textAlign:"center"}},est.toFixed(0)+" zł"));
+      const bars=h("div",{style:{display:"flex",alignItems:"flex-end",gap:"3px",height:"130px"}});
+      if(est>0)bars.appendChild(h("div",{style:{width:"20px",height:Math.max(eH,2)+"%",background:"linear-gradient(180deg,#c9a96e,#a08040)",borderRadius:"4px 4px 0 0"},title:"Kosztorys: "+est.toFixed(0)+" zł"}));
+      if(spent>0)bars.appendChild(h("div",{style:{width:"20px",height:Math.max(sH,2)+"%",background:"linear-gradient(180deg,#d4a84a,#7a6030)",borderRadius:"4px 4px 0 0"},title:"Wydano: "+spent.toFixed(0)+" zł"}));
+      col.appendChild(bars);
+      col.appendChild(h("div",{style:{fontSize:"10px",color:"#6a5535",marginTop:"6px",textAlign:"center",wordBreak:"break-word",maxWidth:"80px"}},name));
+      if(persons>1)col.appendChild(h("div",{style:{fontSize:"9px",color:"#4a3a22",textAlign:"center"}},"👤 "+(est/persons).toFixed(0)+" zł/os."));
+      chart.appendChild(col);
+    });
+    chartWrap.appendChild(chart);
+    const legend=h("div",{style:{display:"flex",gap:"16px",marginTop:"12px"}});
+    legend.appendChild(h("div",{style:{display:"flex",alignItems:"center",gap:"6px"}},h("div",{style:{width:"14px",height:"10px",background:"#c9a96e",borderRadius:"2px"}}),h("span",{style:{color:"#6a5535",fontSize:"11px"}},"Kosztorys")));
+    legend.appendChild(h("div",{style:{display:"flex",alignItems:"center",gap:"6px"}},h("div",{style:{width:"14px",height:"10px",background:"#d4a84a",borderRadius:"2px"}}),h("span",{style:{color:"#6a5535",fontSize:"11px"}},"Wydano na miejscu")));
+    chartWrap.appendChild(legend);
+    app.appendChild(chartWrap);
+
+    // Table
+    app.appendChild(h("div",{style:{color:"#a08060",fontSize:"11px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"12px"}},"Zestawienie szczegółowe"));
+    const tbl=h("div",{style:{overflowX:"auto"}});
+    // Header row
+    const cols=["Wyjazd","Cel","Daty","Dni","Osoby","💰 Kosztorys","💰 /os.","🎒 Wydano","🎒 /os.","Status"];
+    const hrow=h("div",{style:{display:"grid",gridTemplateColumns:"2fr 1.5fr 2fr 0.6fr 0.6fr 1.2fr 1.2fr 1.2fr 1.2fr 1fr",gap:"1px",background:"#2a2015",borderRadius:"12px 12px 0 0",overflow:"hidden",minWidth:"760px"}});
+    cols.forEach(c=>hrow.appendChild(h("div",{style:{background:"#1c1710",padding:"10px 12px",color:"#6a5535",fontSize:"11px",fontWeight:"700",textTransform:"uppercase",letterSpacing:".8px"}},c)));
+    tbl.appendChild(hrow);
+
+    all.forEach((trip,i)=>{
+      const numDays=getDays(trip.startDate,trip.endDate).length;
+      const persons=parseInt(trip.persons)||1;
+      const estTotal=(trip.estimates||[]).reduce((s,e)=>s+(parseFloat(e.cost)||0),0);
+      const spent=(trip.events||[]).reduce((s,e)=>s+(parseFloat(e.cost)||0),0);
+      const isLast=i===all.length-1;
+      const row=h("div",{style:{display:"grid",gridTemplateColumns:"2fr 1.5fr 2fr 0.6fr 0.6fr 1.2fr 1.2fr 1.2fr 1.2fr 1fr",gap:"1px",background:"#2a2015",borderRadius:isLast?"0 0 12px 12px":"0",overflow:"hidden",minWidth:"760px",cursor:"pointer"}});
+      row.addEventListener("click",()=>{state.selId=trip.id;state.tab="estimate";render();});
+      const cells=[
+        [trip.name,"#ede0c8","700"],
+        [trip.destination||"—","#6a5535","400"],
+        [trip.startDate?(fmtShort(trip.startDate)+(trip.endDate?" — "+fmtShort(trip.endDate):"")):"—","#6a5535","400"],
+        [numDays||"—","#c9a96e","700"],
+        [persons,"#9a8060","400"],
+        [estTotal>0?estTotal.toFixed(0)+" zł":"—","#c9a96e","700"],
+        [estTotal>0&&persons>1?(estTotal/persons).toFixed(0)+" zł":"—","#a08060","400"],
+        [spent>0?spent.toFixed(0)+" zł":"—","#d4a84a","700"],
+        [spent>0&&persons>1?(spent/persons).toFixed(0)+" zł":"—","#a08060","400"],
+        [trip.archived?"📦 Arch.":"🗺️ Aktywny","#6a5535","400"],
+      ];
+      cells.forEach(([val,color,fw])=>row.appendChild(h("div",{style:{background:i%2===0?"#171310":"#131008",padding:"10px 12px",color,fontSize:"13px",fontWeight:fw,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},String(val))));
+      tbl.appendChild(row);
+    });
+
+    // Summary row
+    const totEst=all.reduce((s,t)=>(t.estimates||[]).reduce((ss,e)=>ss+(parseFloat(e.cost)||0),s),0);
+    const totSpent=all.reduce((s,t)=>(t.events||[]).reduce((ss,e)=>ss+(parseFloat(e.cost)||0),s),0);
+    const sumRow=h("div",{style:{display:"grid",gridTemplateColumns:"2fr 1.5fr 2fr 0.6fr 0.6fr 1.2fr 1.2fr 1.2fr 1.2fr 1fr",gap:"1px",background:"#2a2015",borderRadius:"0 0 12px 12px",overflow:"hidden",minWidth:"760px",marginTop:"1px"}});
+    const sumVals=[["SUMA","#c9a96e","700"],[all.length+" wyjazdów","#6a5535","400"],["","#6a5535","400"],["","#6a5535","400"],["","#6a5535","400"],[totEst>0?totEst.toFixed(0)+" zł":"—","#c9a96e","700"],["","#6a5535","400"],[totSpent>0?totSpent.toFixed(0)+" zł":"—","#d4a84a","700"],["","#6a5535","400"],["","#6a5535","400"]];
+    sumVals.forEach(([val,color,fw])=>sumRow.appendChild(h("div",{style:{background:"#1c1710",padding:"10px 12px",color,fontSize:"12px",fontWeight:fw,borderTop:"1px solid #2a2015"}},val)));
+    tbl.appendChild(sumRow);
+    app.appendChild(tbl);
+  }
+}
+
+function render(){
+  const trip=getTrip();
+  if(trip)renderTripDetail(trip);
+  else renderList();
+}
+
+loadData();render();
+</script>
+</body>
+</html>
