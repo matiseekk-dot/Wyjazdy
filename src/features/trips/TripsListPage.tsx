@@ -45,7 +45,7 @@ export function TripsListPage() {
                   marginTop: spacing[3],
                   fontSize: fontSize.md,
                   fontWeight: fontWeight.semibold,
-                  color: colors.accent,
+                  color: colors.money,
                 }}
               >
                 {formatMoney(trip.totalCostBase, trip.baseCurrency)}

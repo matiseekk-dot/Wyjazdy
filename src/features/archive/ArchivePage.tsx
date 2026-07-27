@@ -78,7 +78,7 @@ export function ArchivePage() {
                 <div style={{ marginTop: spacing[1], fontSize: fontSize.sm, color: colors.textMuted }}>
                   {trip.countries.join(', ')}
                 </div>
-                <div style={{ marginTop: spacing[2], fontWeight: fontWeight.semibold, color: colors.accent }}>
+                <div style={{ marginTop: spacing[2], fontWeight: fontWeight.semibold, color: colors.money }}>
                   {formatMoney(trip.totalCostBase, trip.baseCurrency)}
                 </div>
               </Link>

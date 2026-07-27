@@ -19,8 +19,8 @@ export default defineConfig({
         start_url: '/wyjazdy/',
         scope: '/wyjazdy/',
         display: 'standalone',
-        background_color: '#f6f5f1',
-        theme_color: '#0d9488',
+        background_color: '#f4f5f7',
+        theme_color: '#1e3a5f',
         icons: [
           { src: 'pwa-64x64.png', sizes: '64x64', type: 'image/png' },
           { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },

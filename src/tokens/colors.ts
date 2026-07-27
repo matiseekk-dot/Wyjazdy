@@ -15,6 +15,8 @@ export const colors = {
   accentBg: 'var(--color-accent-bg)',
   accentBorder: 'var(--color-accent-border)',
 
+  money: 'var(--color-money)',
+
   danger: 'var(--color-danger)',
   dangerBg: 'var(--color-danger-bg)',
   dangerHover: 'var(--color-danger-hover)',

@@ -72,7 +72,7 @@ export function TripRetrospectivePage({ tripId, trip, participants, items, balan
       <div className="card" style={{ marginTop: spacing[4], padding: spacing[4] }}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <span style={{ color: colors.textMuted, fontSize: fontSize.sm }}>Koszt całkowity</span>
-          <strong style={{ fontSize: fontSize.lg, color: colors.accent }}>
+          <strong style={{ fontSize: fontSize.lg, color: colors.money }}>
             {formatMoney(trip.totalCostBase, trip.baseCurrency)}
           </strong>
         </div>
